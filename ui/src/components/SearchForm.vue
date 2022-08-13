@@ -5,12 +5,32 @@
       v-model="query"
       @input="onInput"
     />
-    <ul>
-      <li v-for="publication in publications"  :key="publication">
-        {{publication.title}}
-      </li>
-    </ul>
-    <!-- <div v-for="publication in publications">{{publication.title}}</div> -->
+    <va-list v-if="publications">
+    <va-list-label>
+      Publications
+    </va-list-label>
+
+    <va-list-item
+      v-for="(publication, index) in publications"
+      :key="index"
+    >
+
+      <va-list-item-section>
+        <va-list-item-label>
+          {{ publication.title }}
+        </va-list-item-label>
+
+        <va-list-item-label caption>
+          <span v-for="(author, indexAuthor) in publication.authors" :key="indexAuthor">
+            <span v-if="indexAuthor != 0">, </span>
+            <span>{{ author.lastname }}</span>
+          </span>
+        </va-list-item-label>
+      </va-list-item-section>
+
+    </va-list-item>
+  </va-list>
+
 </template>
 
 <script>
