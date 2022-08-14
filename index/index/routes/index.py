@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 
 from index.core import ACLClient, ElasticSearchClient, GithubClient
 
@@ -8,14 +8,12 @@ elasticsearch_client = ElasticSearchClient()
 github_client = GithubClient()
 
 
-@router.post("")
-def update_index():
-    pass
-
-
-@router.post("/{year}/{conference}")
-def update_index(year: int, conference: str):
-    filename = f"{year}.{conference}.xml"
+@router.post("/{filename}")
+def update_index(
+    filename: str = Query(
+        description="The filename of the ACL file in the acl-org/acl-anthology repository to update the index with"
+    ),
+):
     file = github_client.get_file_from_repo(
         repo="acl-org/acl-anthology", dir="data/xml", filename=filename
     )
@@ -23,10 +21,10 @@ def update_index(year: int, conference: str):
         raise HTTPException(status_code=404, detail=f"File {filename} not found.")
 
     xml = acl_client.get_xml_from_url(file["download_url"])
-    for publication in acl_client.get_publications_from_xml(xml):
+    try:
+        conference = acl_client.get_conference_from_filename(filename)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    for publication in acl_client.get_publications_from_xml(xml, conference):
         elasticsearch_client.index_publication(publication)
-
-
-@router.get("/publication")
-def get_publication(query: str):
-    return elasticsearch_client.search_publications(query)
