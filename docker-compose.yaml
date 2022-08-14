@@ -17,7 +17,7 @@ services:
       - --accesslog.format=json
       - --accesslog.filepath=/var/log/traefik/access.log.json
     labels:
-      - "traefik.enable=true"
+      - traefik.enable=true
     ports:
       - 80:80
     volumes:
