@@ -3,6 +3,8 @@ from typing import Dict, List, Union
 from elasticsearch import Elasticsearch
 from elasticsearch_dsl import Index
 from elasticsearch_dsl.query import MultiMatch
+from elasticsearch_dsl.exceptions import ValidationException
+
 
 from index.models.elasticsearch.publication import Publication
 from index.settings import ElasticSearchSettings
@@ -28,7 +30,10 @@ class ElasticSearchClient:
     def index_publication(self, publication: Union[Publication, Dict]):
         if isinstance(publication, dict):
             publication = Publication(**publication, meta={"id": publication["bibkey"]})
-        publication.save(using=self.es)
+        try:
+            publication.save(using=self.es)
+        except ValidationException as e:
+            print(f"Skipping {publication}.\n{e}")
         self.search_publications.cache_clear()
 
     def index_publications(self, publications: List[Union[Publication, Dict]]):
