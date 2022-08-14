@@ -21,11 +21,10 @@ class Publication(Document):
             "number_of_shards": 1,
         }
 
-    title = SearchAsYouType(required=True)
     conference = Keyword(required=True)
     year = Integer(required=True)
-    volume = Keyword()
-    abstract = Text()
-    url = Text()
-    bibkey = Text()
-    authors = Nested(Author, multi=True)
+    bibkey = Text(required=True)
+    url = Text(required=True)
+    title = SearchAsYouType(required=True)
+    abstract = Text(required=False)
+    authors = Nested(Author, multi=True, required=True)
