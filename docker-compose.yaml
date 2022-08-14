@@ -2,6 +2,39 @@ x-restart-policy:
   restart: &default-restart-policy unless-stopped
   
 services:
+  traefik:
+    image: traefik:v2.8.3
+    restart: *default-restart-policy
+    command:
+      - --api.insecure=true
+      - --api.dashboard=true
+      - --log.level=DEBUG
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+      - --accesslog=true
+      - --accesslog.format=json
+      - --accesslog.filepath=/var/log/traefik/access.log.json
+    labels:
+      - "traefik.enable=true"
+    ports:
+      - 80:80
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  frontend:
+    image: timbmg/acl-search-frontend
+    build: 
+      context: ./ui
+    restart: *default-restart-policy
+    expose:
+      - 80
+      - 443
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.frontend.priority=1
+      - traefik.http.routers.frontend.rule=Host(`185.198.27.95`)
+  
   index:
     image: timbmg/acl-search-index
     build: 
@@ -15,12 +48,16 @@ services:
       ELASTICSEARCH_PORT: 9200
     env_file:
       - .env
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.index.rule=PathPrefix(`/api/index`)
+      - traefik.http.routers.index.middlewares=index-stripprefix,index-addprefix
+      - traefik.http.middlewares.index-stripprefix.stripprefix.prefixes=/api/index 
+      - traefik.http.middlewares.index-addprefix.addPrefix.prefix=/api
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.3.3
     restart: *default-restart-policy
-    ports:
-      - 9200:9200
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
