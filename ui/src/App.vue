@@ -1,15 +1,20 @@
 <template>
-  <SearchForm></SearchForm>
+  <div id="app">
+    <b-container fluid="sm">
+      <b-row>
+        <SearchInput/>
+      </b-row>
+    </b-container>
+  </div>
 </template>
 
 <script>
-// import HelloWorld from './components/HelloWorld.vue'
-import SearchForm from './components/SearchForm.vue'
+import SearchInput from './components/SearchInput.vue'
 
 export default {
   name: 'App',
   components: {
-    SearchForm
+    SearchInput
   }
 }
 </script>

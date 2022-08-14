@@ -9,9 +9,10 @@
   },
   "dependencies": {
     "axios": "^0.27.2",
+    "bootstrap": "^5.2.0",
+    "bootstrap-vue": "^2.22.0",
     "core-js": "^3.8.3",
-    "vue": "^3.2.13",
-    "vuestic-ui": "^1.4.7"
+    "vue": "^2.7.8"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
@@ -21,7 +22,7 @@
     "@vue/cli-service": "~5.0.0",
     "eslint": "^7.32.0",
     "eslint-plugin-vue": "^8.0.3",
-    "vue-cli-plugin-vuestic-ui": "~1.0.8"
+    "vue-template-compiler": "^2.6.14"
   },
   "eslintConfig": {
     "root": true,
@@ -29,7 +30,7 @@
       "node": true
     },
     "extends": [
-      "plugin:vue/vue3-essential",
+      "plugin:vue/essential",
       "eslint:recommended"
     ],
     "parserOptions": {
@@ -40,7 +41,6 @@
   "browserslist": [
     "> 1%",
     "last 2 versions",
-    "not dead",
-    "not ie 11"
+    "not dead"
   ]
 }
