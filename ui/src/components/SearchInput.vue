@@ -47,7 +47,7 @@ export default {
 
       this.query = value;
 
-      axios.get(`${process.env.VUE_APP_INDEX_URL}:8000/api/publications?query=${this.query}`)
+      axios.get(`${process.env.VUE_APP_INDEX_URL}/api/index/publications?query=${this.query}`)
         .then(response => {
           this.took = new Date().getTime() - start;
           this.publications = response.data
