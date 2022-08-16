@@ -24,7 +24,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   frontend:
-    image: timbmg/acl-search-frontend
+    image: timbmg/acl-search-frontend:latest
     build: 
       context: ./ui
     restart: *default-restart-policy
@@ -37,7 +37,7 @@ services:
       - traefik.http.routers.frontend.rule=Host(`185.198.27.95`)
   
   index:
-    image: timbmg/acl-search-index
+    image: timbmg/acl-search-index:latest
     build: 
       context: ./index
     command: uvicorn index.main:app --host 0.0.0.0 --port 8000
@@ -54,6 +54,26 @@ services:
       - traefik.http.routers.index.rule=PathPrefix(`/api/index`)
       - traefik.http.routers.index.middlewares=index-stripprefix,index-addprefix
       - traefik.http.middlewares.index-stripprefix.stripprefix.prefixes=/api/index 
+      - traefik.http.middlewares.index-addprefix.addPrefix.prefix=/api
+  
+  search:
+    image: timbmg/acl-search-search:latest
+    build: 
+      context: ./search
+    command: uvicorn search.main:app --host 0.0.0.0 --port 8001
+    restart: *default-restart-policy
+    ports:
+      - 8001:8001
+    environment:
+      ELASTICSEARCH_HOST: elasticsearch
+      ELASTICSEARCH_PORT: 9200
+    env_file:
+      - .env
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.index.rule=PathPrefix(`/api/search`)
+      - traefik.http.routers.index.middlewares=index-stripprefix,index-addprefix
+      - traefik.http.middlewares.index-stripprefix.stripprefix.prefixes=/api/search 
       - traefik.http.middlewares.index-addprefix.addPrefix.prefix=/api
 
   elasticsearch:

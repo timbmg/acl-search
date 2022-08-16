@@ -1,15 +1,15 @@
 from typing import List, Optional
 from fastapi import APIRouter
 
-from index.core import ElasticSearchClient
-from index.models import Publication
+from search.core import ElasticSearchClient
+from search.models import Publication
 
 elasticsearch_client = ElasticSearchClient()
 
 router = APIRouter()
 
 
-@router.get("", response_model=List[Publication])
+@router.get("/publications", response_model=List[Publication])
 def get_publication(
     query: str,
     from_: Optional[int] = None,

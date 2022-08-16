@@ -1,11 +1,8 @@
-from functools import lru_cache
 from typing import Dict, List, Union
+
 from elasticsearch import Elasticsearch
 from elasticsearch_dsl import Index
-from elasticsearch_dsl.query import MultiMatch
 from elasticsearch_dsl.exceptions import ValidationException
-
-
 from index.models.elasticsearch.publication import Publication
 from index.settings import ElasticSearchSettings
 
@@ -40,24 +37,3 @@ class ElasticSearchClient:
         # TODO: Bulk indexing
         for publication in publications:
             self.index_publication(publication)
-
-    @lru_cache(maxsize=128)
-    def search_publications(self, query: str, from_: int = None, size: int = None):
-        s = Publication.search(using=self.es)
-
-        extra_params = {}
-        if from_ is not None:
-            extra_params["from_"] = from_
-        if size is not None:
-            extra_params["size"] = size
-        if extra_params:
-            s = s.extra(**extra_params)
-
-        s.query = MultiMatch(
-            query=query,
-            type="bool_prefix",
-            fields=["title"],
-        )
-        response = s.execute()
-
-        return [p.to_dict() for p in response]

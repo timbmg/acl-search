@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+pydantic
+requests
+elasticsearch
+elasticsearch-dsl

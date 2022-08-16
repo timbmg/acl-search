@@ -1,0 +1,1 @@
+from search.settings.elasticsearch import ElasticSearchSettings
