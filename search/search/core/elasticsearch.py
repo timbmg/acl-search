@@ -21,7 +21,7 @@ class ElasticSearchClient:
 
     @lru_cache(maxsize=128)
     def search_publications(self, query: str, from_: int = None, size: int = None):
-        s = Publication.search(using=self.es)
+        s = Publication.search(using=self.es).sort({"year": {"order": "desc"}})
 
         extra_params = {}
         if from_ is not None:
