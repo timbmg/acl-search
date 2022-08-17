@@ -16,7 +16,7 @@
                 v-bind:sub-title="flattenAuthors(publication.authors)"
               >
                 <b-card-text>
-                  {{publication.conference.toUpperCase()}} {{publication.year}}
+                  {{publication.conference_short.toUpperCase()}} {{publication.year}}
                 </b-card-text>
               </b-card>
             </a>
@@ -47,7 +47,7 @@ export default {
 
       this.query = value;
 
-      axios.get(`${process.env.VUE_APP_INDEX_URL}/api/index/publications?query=${this.query}`)
+      axios.get(`${process.env.VUE_APP_SEARCH_URL}/api/search/publications?query=${this.query}`)
         .then(response => {
           this.took = new Date().getTime() - start;
           this.publications = response.data
