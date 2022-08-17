@@ -9,7 +9,8 @@ class Author(BaseModel):
 
 class Publication(BaseModel):
     title: str
-    conference: str
+    conference_short: str
+    conference_long: str
     year: int = Field(..., gt=0)
     bibkey: str
     url: str
