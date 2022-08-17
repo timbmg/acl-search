@@ -19,8 +19,7 @@ def setup_periodic_tasks(sender, **kwargs):
     logger.info("Setting up periodic tasks.")
     sender.add_periodic_task(
         # crontab(hour=0, minute=0),
-        crontab(minute="*/1"),
-        # crontab(minute=0),
+        crontab(minute="*/10"),
         check_new_files_in_github.s(),
         name="check_new_files_in_github_every_day",
     )
