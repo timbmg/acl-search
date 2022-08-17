@@ -21,7 +21,8 @@ class Publication(Document):
             "number_of_shards": 1,
         }
 
-    conference = Keyword(required=True)
+    conference_short = Keyword(required=True)
+    conference_long = Keyword(required=True)
     year = Integer(required=True)
     bibkey = Text(required=True)
     url = Text(required=True)
