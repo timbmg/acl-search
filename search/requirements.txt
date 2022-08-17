@@ -4,3 +4,4 @@ pydantic
 requests
 elasticsearch
 elasticsearch-dsl
+python-json-logger
