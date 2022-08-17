@@ -8,3 +8,5 @@ COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
 COPY ./index ./index
+
+COPY ./logging.conf ./logging.conf
