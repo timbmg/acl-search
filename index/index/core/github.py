@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Dict, List
 from github import Github
 from github.ContentFile import ContentFile
@@ -19,11 +20,16 @@ class GithubClient:
 
         return files
 
-    def _file_to_dict(self, file: ContentFile, properties: List[str] = None):
+    def _file_to_dict(self, file: ContentFile, properties: List[str] = None) -> Dict:
         _properties = ["sha", "name", "download_url", "last_modified"]
         if properties:
             _properties = list(set(_properties + properties))
-        return {p: getattr(file, p) for p in _properties if hasattr(file, p)}
+        file_dict = {p: getattr(file, p) for p in _properties if hasattr(file, p)}
+        file_dict["last_modified"] = datetime.strptime(
+            file_dict["last_modified"], "%a, %d %b %Y %H:%M:%S %Z"
+        ).timestamp()
+
+        return file_dict
 
     def get_all_files_from_repo(
         self, repo: str, dir: str, properties: List = None
