@@ -75,9 +75,6 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.index.rule=PathPrefix(`/api/search`)
-      - traefik.http.routers.index.middlewares=index-stripprefix,index-addprefix
-      - traefik.http.middlewares.index-stripprefix.stripprefix.prefixes=/api/search 
-      - traefik.http.middlewares.index-addprefix.addPrefix.prefix=/api
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.3.3
