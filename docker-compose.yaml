@@ -36,34 +36,37 @@ services:
       - traefik.http.routers.frontend.priority=1
       - traefik.http.routers.frontend.rule=Host(`185.198.27.95`)
   
-  index:
+  index-worker: &index
     image: timbmg/acl-search-index:latest
     build: 
       context: ./index
-    command: uvicorn index.main:app --host 0.0.0.0 --port 8000
+    command: celery -A index.core worker -l INFO
     restart: *default-restart-policy
-    ports:
-      - 8000:8000
     environment:
       ELASTICSEARCH_HOST: elasticsearch
       ELASTICSEARCH_PORT: 9200
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
     env_file:
       - .env
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.index.rule=PathPrefix(`/api/index`)
-      - traefik.http.routers.index.middlewares=index-stripprefix,index-addprefix
-      - traefik.http.middlewares.index-stripprefix.stripprefix.prefixes=/api/index 
-      - traefik.http.middlewares.index-addprefix.addPrefix.prefix=/api
+      - ./rabbitmq/.env
+    volumes:
+      - ./index/venues.yaml:/venues.yaml
   
+  index-beat:
+    <<: *index
+    command: celery -A index.core beat -l DEBUG
+
   search:
     image: timbmg/acl-search-search:latest
     build: 
       context: ./search
-    command: uvicorn search.main:app --host 0.0.0.0 --port 8001
+    command: uvicorn search.main:app --host 0.0.0.0 --port 8000
     restart: *default-restart-policy
     ports:
-      - 8001:8001
+      - 8000:8000
     environment:
       ELASTICSEARCH_HOST: elasticsearch
       ELASTICSEARCH_PORT: 9200
