@@ -1,8 +1,8 @@
-fastapi
-uvicorn
 pydantic
 requests
 elasticsearch
 elasticsearch-dsl
 PyGithub
+celery[redis]
 python-json-logger
+pyyaml

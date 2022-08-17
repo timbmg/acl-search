@@ -1,42 +1,32 @@
-from typing import Union
+from typing import Dict, Union
+
 import requests
+import yaml
+from yaml.loader import SafeLoader
 
 from xml.etree import ElementTree
 
 
 class ACLClient:
     def __init__(self):
-        self.letter2conference = {
-            "P": "acl",
-            "U": "alta",
-            "A": "anlp",
-            "J": "cl",
-            "C": "coling",
-            "K": "conll",
-            "E": "eacl",
-            "D": "emnlp",
-            "H": "hlt",
-            "I": "ijcnlp",
-            "F": "jeptalnrecital",
-            "L": "lrec",
-            "M": "muc",
-            "N": "naacl",
-            "Y": "paclic",
-            "R": "ranlp",
-            "S": "semeval",
-            "Q": "tacl",
-            "T": "tinlap",
-            "X": "tipster",
-            "W": "ws",
+ 
+        with open("/venues.yaml") as fh:
+            self.venues = yaml.load(fh, Loader=SafeLoader)
+        self.conferences = list(self.venues.keys())
+        self.conference_2_acronym = {k: v["acronym"] for k, v in self.venues.items()}
+        self.conference_2_name = {k: v["name"] for k, v in self.venues.items()}
+        self.oldstyle_letter_2_conference = {
+            v["oldstyle_letter"] for v in self.venues.values() if "oldstyle_letter" in v
         }
-        self.conferences = list(self.letter2conference.values())
 
     def get_conference_from_filename(self, filename: str) -> str:
         # remove extension
         *filename_wo_extension, _ = filename.split(".")
         if len(filename_wo_extension) == 1:
             # old filename style, e.g. "E91.xml"
-            conference = self.letter2conference[filename_wo_extension[0][0].upper()]
+            conference = self.oldstyle_letter_2_conference[
+                filename_wo_extension[0][0].upper()
+            ]
         elif len(filename_wo_extension) == 2:
             # new filename style, e.g. "2022.acl.xml"
             conference = filename_wo_extension[1].lower()
@@ -62,9 +52,7 @@ class ACLClient:
             result = self.get_text(result)
         return result
 
-    def get_publications_from_xml(self, xml: str, conference: str) -> dict:
-        if conference not in self.conferences:
-            conference = self.letter2conference[conference]
+    def get_publications_from_xml(self, xml: str, conference: str) -> Dict:
 
         tree = ElementTree.fromstring(xml)
 
@@ -88,7 +76,8 @@ class ACLClient:
                 url = self.find_and_get_text(paper, "url")
 
                 yield {
-                    "conference": conference,
+                    "conference_short": self.conference_2_acronym[conference],
+                    "conference_long": self.conference_2_name[conference],
                     "year": year,
                     "title": title,
                     "abstract": abstract,
