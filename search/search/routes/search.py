@@ -1,5 +1,5 @@
 from typing import List, Optional
-from fastapi import APIRouter
+from cachetools import cached, TTLCache
 
 from search.core import ElasticSearchClient
 from search.models import Publication
@@ -9,6 +9,7 @@ elasticsearch_client = ElasticSearchClient()
 router = APIRouter()
 
 
+@cached(cache=TTLCache(maxsize=100, ttl=600))
 @router.get("/publications", response_model=List[Publication])
 def get_publication(
     query: str,
