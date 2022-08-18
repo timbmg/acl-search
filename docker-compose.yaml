@@ -63,7 +63,7 @@ services:
     image: timbmg/acl-search-search:latest
     build: 
       context: ./search
-    command: uvicorn search.main:app --host 0.0.0.0 --port 8000
+    command: uvicorn search.main:app --host 0.0.0.0 --port 8000 --log-config logging.conf --no-use-colors
     restart: *default-restart-policy
     ports:
       - 8000:8000
