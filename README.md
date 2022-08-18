@@ -2,7 +2,7 @@
 <div align="center">
 <img src="imgs/aclsearch.png" width="200"/>
 <h3>ACL Search</h3>
-<p>An search-as-you-type web app for the <a href="https://aclanthology.org" target="_blank">ACL Anthology</a></p>
+<p>A search-as-you-type web app for the <a href="https://aclanthology.org" target="_blank">ACL Anthology</a></p>
 </div>
 
 ## Architecture
