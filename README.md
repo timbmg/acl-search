@@ -1,7 +1,7 @@
 
 <div align="center">
 <img src="imgs/aclsearch.png" width="200"/>
-<h2>ACL Search</h1>
+<h3>ACL Search</h3>
 <p>An search-as-you-type web app for the <a href="https://aclanthology.org" target="_blank">ACL Anthology</a></p>
 </div>
 
