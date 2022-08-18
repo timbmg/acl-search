@@ -62,5 +62,14 @@ class ElasticSearchClient:
 
         return [p.to_dict() for p in response]
 
-    def reset_search_publications_cache(self):
-        self.search_publications.cache_clear()
+    def get_unique_value_conuts(self, index: str, field: str) -> Dict[str, int]:
+        s = Search(using=self.es, index=index)
+        a = A("terms", field=field)
+        s.aggs.bucket("unique_values", a)
+        response = s.execute()
+        response = response.to_dict()
+        value_to_count = {
+            b["key"]: b["doc_count"]
+            for b in response["aggregations"]["unique_values"]["buckets"]
+        }
+        return value_to_count
