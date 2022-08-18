@@ -1,10 +1,14 @@
-from functools import lru_cache
+import logging
+from typing import Dict, List, Optional
 from elasticsearch import Elasticsearch
-from elasticsearch_dsl.query import MultiMatch
+from elasticsearch_dsl import A, Search
+from elasticsearch_dsl.query import Bool, MultiMatch
 
 
 from search.models.elasticsearch import Publication
 from search.settings import ElasticSearchSettings
+
+logger = logging.getLogger(__name__)
 
 
 class ElasticSearchClient:
@@ -19,9 +23,22 @@ class ElasticSearchClient:
             sniff_on_connection_fail=True,
         )
 
-    @lru_cache(maxsize=128)
-    def search_publications(self, query: str, from_: int = None, size: int = None):
-        s = Publication.search(using=self.es).sort({"year": {"order": "desc"}})
+    def search_publications(
+        self,
+        query: str,
+        conferences_to_include: Optional[List[str]] = None,
+        conferences_to_exclude: Optional[List[str]] = None,
+        year_gte: Optional[int] = None,
+        year_lte: Optional[int] = None,
+        from_: Optional[int] = None,
+        size: Optional[int] = None,
+    ) -> List[Dict]:
+
+        s = Publication.search(using=self.es)
+
+        s.query = Bool(
+            must=[MultiMatch(query=query, type="bool_prefix", fields=["title"])]
+        )
 
         extra_params = {}
         if from_ is not None:
@@ -30,12 +47,17 @@ class ElasticSearchClient:
             extra_params["size"] = size
         if extra_params:
             s = s.extra(**extra_params)
+        if conferences_to_include:
+            s = s.filter("terms", conference_short=conferences_to_include)
+        if conferences_to_exclude:
+            s = s.exclude("terms", conference_short=conferences_to_exclude)
+        if year_gte:
+            s = s.filter("range", year={"gte": year_gte})
+        if year_lte:
+            s = s.filter("range", year={"lte": year_lte})
 
-        s.query = MultiMatch(
-            query=query,
-            type="bool_prefix",
-            fields=["title"],
-        )
+        logger.info("Query: {}".format(s.to_dict()))
+
         response = s.execute()
 
         return [p.to_dict() for p in response]
