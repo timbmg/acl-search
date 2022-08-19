@@ -19,6 +19,7 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.traefik.rule=PathPrefix(`/dashboard`) || PathPrefix(`/api`)
+      - traefik.http.routers.traefik.service=api@internal
       - traefik.http.routers.traefik.middlewares=auth
       - traefik.http.middlewares.auth.basicauth.users=admin:${ACL_SEARCH_ADMIN_PASSWORD}
     ports:
@@ -43,7 +44,7 @@ services:
     image: timbmg/acl-search-index:latest
     build: 
       context: ./index
-    command: celery -A index.core worker -l INFO
+    command: celery -A index.core worker -l DEBUG
     restart: *default-restart-policy
     environment:
       ELASTICSEARCH_HOST: elasticsearch
