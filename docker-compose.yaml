@@ -124,6 +124,17 @@ services:
       timeout: 30s
       retries: 3
 
+  flower:
+    image: mher/flower:1.2
+    command: flower --broker=amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbitmq:5672// --port=5555
+    expose:
+      - 5555
+    depends_on:
+      - rabbitmq
+    labels:
+    - traefik.enable=true
+    - traefik.http.routers.index.rule=PathPrefix(`/admin/flower`)
+
 volumes:
   elasticsearch_data:
     driver: local
