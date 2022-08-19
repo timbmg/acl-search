@@ -18,6 +18,9 @@ services:
       - --accesslog.filepath=/var/log/traefik/access.log.json
     labels:
       - traefik.enable=true
+      - traefik.http.routers.traefik.rule=PathPrefix(`/dashboard`) || PathPrefix(`/api`)
+      - traefik.http.routers.traefik.middlewares=auth
+      - traefik.http.middlewares.auth.basicauth.users=admin:${ACL_SEARCH_ADMIN_PASSWORD}
     ports:
       - 80:80
     volumes:
