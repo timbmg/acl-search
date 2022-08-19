@@ -129,15 +129,22 @@ services:
 
   flower:
     image: mher/flower:1.2
-    command: flower --broker=amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbitmq:5672// --port=5555
+    restart: *default-restart-policy
+    command: >
+      celery 
+      --broker=amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbitmq:5672// 
+      flower --host=0.0.0.0 --port=5555 --persistent=true --url_prefix=admin/flower
     expose:
       - 5555
+    env_file:
+      - ./rabbitmq/.env
     depends_on:
       - rabbitmq
     labels:
     - traefik.enable=true
-    - traefik.http.routers.index.rule=PathPrefix(`/admin/flower`)
-
+    - traefik.http.routers.flower.rule=PathPrefix(`/admin/flower`)
+    - traefik.http.routers.flower.middlewares=auth
+    
 volumes:
   elasticsearch_data:
     driver: local
