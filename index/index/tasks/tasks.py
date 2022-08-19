@@ -2,12 +2,13 @@ import logging
 from typing import Union
 
 from celery.schedules import crontab
+from celery.utils.log import get_task_logger
 
 from index.core import ACLClient, GithubClient, ElasticSearchClient
 from index.core.celery import app as celery_app
 from index.models.elasticsearch.file import File
 
-logger = logging.getLogger(__name__)
+logger = get_task_logger(__name__)
 
 acl_client = ACLClient()
 github_client = GithubClient()
