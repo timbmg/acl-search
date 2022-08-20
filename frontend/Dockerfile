@@ -2,7 +2,8 @@
 FROM node:lts-alpine as build-stage
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm install -g npm@8.1.4
+RUN npm ci
 COPY . .
 RUN npm run build
 
