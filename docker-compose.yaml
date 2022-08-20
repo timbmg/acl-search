@@ -30,7 +30,7 @@ services:
   frontend:
     image: timbmg/acl-search-frontend:latest
     build: 
-      context: ./ui
+      context: ./frontend
     restart: *default-restart-policy
     expose:
       - 80
