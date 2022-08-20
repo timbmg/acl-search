@@ -55,10 +55,14 @@ class ACLClient:
         return result
 
     def get_publications_from_xml(self, xml: str, conference: str) -> Dict:
+        
 
         tree = ElementTree.fromstring(xml)
-
         for volume in tree.iter("volume"):
+            
+            if not volume.attrib["id"]:
+                # skip volume in meta tag
+                continue
 
             meta = volume.find("meta")
             year = self.find_and_get_text(meta, "year")
