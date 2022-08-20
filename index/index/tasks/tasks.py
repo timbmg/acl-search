@@ -42,7 +42,7 @@ def check_new_files_in_github():
         files_scheduled = 0
         if es_file is None or es_file.last_modified < file["last_modified"]:
             task = index_publications_from_file.apply_async(
-                (file["name"],), countdown=files_scheduled * 60
+                (file,), countdown=files_scheduled * 60
             )
             logger.info(
                 "Scheduled to index from file={} with task_id={}.".format(
@@ -52,19 +52,11 @@ def check_new_files_in_github():
 
 
 @celery_app.task
-def index_publications_from_file(filename):
+def index_publications_from_file(file):
 
-    logger.info("Indexing publications from file: {}".format(filename))
+    xml = acl_client.get_xml_from_url(url=file["download_url"])
 
-    file = github_client.get_file_from_repo(
-        repo="acl-org/acl-anthology", dir="data/xml", filename=filename
-    )
-    if file is None:
-        raise RuntimeError(f"File {filename} not found.")
-
-    xml = acl_client.get_xml_from_url(file["download_url"])
-
-    conference = acl_client.get_conference_from_filename(filename)
+    conference = acl_client.get_conference_from_filename(filename=file["name"])
 
     for publication in acl_client.get_publications_from_xml(xml, conference):
         elasticsearch_client.index_publication(publication)
