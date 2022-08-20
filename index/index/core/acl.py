@@ -16,7 +16,9 @@ class ACLClient:
         self.conference_2_acronym = {k: v["acronym"] for k, v in self.venues.items()}
         self.conference_2_name = {k: v["name"] for k, v in self.venues.items()}
         self.oldstyle_letter_2_conference = {
-            v["oldstyle_letter"] for v in self.venues.values() if "oldstyle_letter" in v
+            v["oldstyle_letter"]: k
+            for k, v in self.venues.items()
+            if "oldstyle_letter" in v
         }
 
     def get_conference_from_filename(self, filename: str) -> str:
