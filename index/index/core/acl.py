@@ -8,9 +8,9 @@ from xml.etree import ElementTree
 
 
 class ACLClient:
-    def __init__(self):
- 
-        with open("/venues.yaml") as fh:
+    def __init__(self, venues_path: str = "/venues.yaml"):
+
+        with open(venues_path) as fh:
             self.venues = yaml.load(fh, Loader=SafeLoader)
         self.conferences = list(self.venues.keys())
         self.conference_2_acronym = {k: v["acronym"] for k, v in self.venues.items()}
