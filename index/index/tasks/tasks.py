@@ -42,12 +42,14 @@ def check_new_files_in_github():
         es_file: Union[None, File] = elasticsearch_client.get_file_by_id(
             _id=file["name"]
         )
-        
+
         files_scheduled = 0
         if es_file is None or es_file.last_modified < file["last_modified"]:
             task = index_publications_from_file.apply_async(
                 (file,), countdown=files_scheduled * 60
             )
+            files_scheduled += 1
+            
             logger.info(
                 "Scheduled to index from file={} with task_id={}.".format(
                     file["name"], task.id
