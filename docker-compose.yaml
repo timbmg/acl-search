@@ -145,7 +145,22 @@ services:
     - traefik.enable=true
     - traefik.http.routers.flower.rule=PathPrefix(`/admin/flower`)
     - traefik.http.routers.flower.middlewares=auth
+
+  dozzle:
+    image: amir20/dozzle:latest
+    restart: *default-restart-policy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      DOZZLE_NO_ANALYTICS: "true"
+      DOZZLE_LEVEL: DEBUG
+      DOZZLE_BASE: /admin/logs
     
+    labels:
+    - traefik.enable=true
+    - traefik.http.routers.dozzle.rule=PathPrefix(`/admin/logs`)
+    - traefik.http.routers.dozzle.middlewares=auth
+
 volumes:
   elasticsearch_data:
     driver: local
