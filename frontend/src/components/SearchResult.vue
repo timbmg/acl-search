@@ -4,7 +4,7 @@
       {{publication.title}}
     </h5>
     <div class="card-subtitle">
-      <a :href="aclUrl" alt="Go to publication in ACL Antology"><span>&#128213;</span></a>
+      <a :href="aclUrl" target="_blank" alt="Go to publication in ACL Antology"><span>&#128213;</span></a>
       <span class="bibkey" @click="copyBibtexToClipboard">&#128221;</span>
       <span class="spacer"> | </span>
       <span>{{publication.conference_short}}</span> <span>{{publication.year}}</span> 
@@ -25,10 +25,12 @@ export default {
   props: {
     publication: Object
   },
-  methods : {
+  computed: {
     aclUrl() {
-      return `https://aclantology.org/${this.publication.url}`
-    },
+      return `https://aclanthology.org/${this.publication.url}`
+    }
+  },
+  methods : {
     copyBibtexToClipboard() {
       navigator.clipboard.writeText(this.publication.bibkey)
     }
