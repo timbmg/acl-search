@@ -35,6 +35,10 @@ def check_new_files_in_github():
     )
 
     for file in files:
+
+        if not file["name"].endswith(".xml"):
+            continue
+
         es_file: Union[None, File] = elasticsearch_client.get_file_by_id(
             _id=file["name"]
         )
