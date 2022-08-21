@@ -11,19 +11,31 @@ services:
       - --api.insecure=true
       - --api.dashboard=true
       - --log.level=DEBUG
-      - --providers.docker=true
-      - --providers.docker.exposedbydefault=false
-      - --entrypoints.web.address=:80
       - --accesslog=true
       - --accesslog.format=json
       - --accesslog.filepath=/var/log/traefik/access.log.json
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --certificatesresolvers.le.acme.tlschallenge=true
+      - --certificatesresolvers.le.acme.email=${ACL_SERACH_LETS_ENCRYPT_EMAIL}
+      - --certificatesResolvers.le.acme.httpChallenge.entrypoint=web
+      - --certificatesresolvers.le.acme.storage=/certs/acme.json
     labels:
       - traefik.enable=true
+      - traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)
+      - traefik.http.routers.http-catchall.entrypoints=web
+      - traefik.http.routers.http-catchall.middlewares=https-redirect
+      - traefik.http.middlewares.https-redirect.redirectscheme.scheme=https
+      - traefik.http.middlewares.https-redirect.redirectscheme.permanent=true
 
     ports:
       - 80:80
+      - 443:443
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - certs:/certs
 
   frontend:
     image: timbmg/acl-search-frontend:latest
@@ -36,8 +48,10 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.frontend.priority=1
-      # - traefik.http.routers.frontend.rule=Host(`aclsearch.live`)
-      - traefik.http.routers.frontend.rule=Host(`localhost`)
+      - traefik.http.routers.frontend.entrypoints=websecure
+      - traefik.http.routers.frontend.tls=true
+      - traefik.http.routers.frontend.tls.certresolver=le
+      - traefik.http.routers.frontend.rule=Host(`aclsearch.live`)
   
   index-worker: &index
     image: timbmg/acl-search-index:latest
@@ -77,6 +91,9 @@ services:
       - .env
     labels:
       - traefik.enable=true
+      - traefik.http.routers.search.entrypoints=websecure
+      - traefik.http.routers.search.tls=true
+      - traefik.http.routers.search.tls.certresolver=le
       - traefik.http.routers.search.rule=PathPrefix(`/api/search`)
 
   elasticsearch:
@@ -128,6 +145,8 @@ services:
       retries: 3
 
 volumes:
+  certs:
+    driver: local
   elasticsearch_data:
     driver: local
   redis_data:
