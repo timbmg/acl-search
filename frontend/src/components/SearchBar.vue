@@ -57,6 +57,7 @@ export default {
 
 <style>
 .search-bar {
+    max-width: 756px;
     margin-bottom: 32px;
 }
 </style>

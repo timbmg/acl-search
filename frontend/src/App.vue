@@ -1,10 +1,10 @@
 <template>
   <div class="container">
     <div class="row">
-      <div class="col-1 d-sm-none d-md-block">
-        <img src="/aclsearch.png" alt="ACL Search" class="img-fluid">
+      <div class="col-1 d-sm-none d-md-block align-middle">
+        <img src="/aclsearch.png" alt="ACL Search" height="40">
       </div>
-      <div class="col-6">
+      <div class="col-11">
         <SearchBar @search="searchResultPublications"/>
       </div>
     </div>
@@ -17,6 +17,7 @@
       <button type="button" class="btn btn-primary" @click="loadMore">Load more</button>
     </div> -->
   </div>
+  
   <div class="fixed-bottom container-fluid">
     <SiteFooter/>
   </div>
@@ -65,6 +66,6 @@ export default {
   padding: 0;
 }
 body {
-  margin-bottom: 200px;
+  margin-bottom: 180px;
 }
 </style>
