@@ -37,7 +37,13 @@ class ElasticSearchClient:
         s = Publication.search(using=self.es)
 
         s.query = Bool(
-            must=[MultiMatch(query=query, type="bool_prefix", fields=["title"])]
+            must=[
+                MultiMatch(
+                    query=query,
+                    type="bool_prefix",
+                    fields=["title", "title._2gram", "title._3gram"],
+                )
+            ]
         )
 
         extra_params = {}
