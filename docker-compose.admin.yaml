@@ -10,6 +10,7 @@ services:
       - traefik.http.routers.traefik.service=api@internal
       - traefik.http.routers.traefik.middlewares=auth
       - traefik.http.middlewares.auth.basicauth.users=admin:${ACL_SEARCH_ADMIN_PASSWORD}
+  
   flower:
     image: mher/flower:1.2
     restart: *default-restart-policy
@@ -24,9 +25,12 @@ services:
     depends_on:
       - rabbitmq
     labels:
-    - traefik.enable=true
-    - traefik.http.routers.flower.rule=PathPrefix(`/admin/flower`)
-    - traefik.http.routers.flower.middlewares=auth
+      - traefik.enable=true
+      - traefik.http.routers.flower.entrypoints=websecure
+      - traefik.http.routers.flower.tls=true
+      - traefik.http.routers.flower.tls.certresolver=le
+      - traefik.http.routers.flower.rule=PathPrefix(`/admin/flower`)
+      - traefik.http.routers.flower.middlewares=auth
 
   dozzle:
     image: amir20/dozzle:v4.0.1
@@ -37,8 +41,13 @@ services:
       DOZZLE_NO_ANALYTICS: "true"
       DOZZLE_LEVEL: DEBUG
       DOZZLE_BASE: /admin/logs
-    
     labels:
-    - traefik.enable=true
-    - traefik.http.routers.dozzle.rule=PathPrefix(`/admin/logs`)
-    - traefik.http.routers.dozzle.middlewares=auth
+      - traefik.enable=true
+      - traefik.http.routers.dozzle.entrypoints=websecure
+      - traefik.http.routers.dozzle.tls=true
+      - traefik.http.routers.dozzle.tls.certresolver=le
+      - traefik.http.routers.dozzle.rule=PathPrefix(`/admin/logs`)
+      - traefik.http.routers.dozzle.middlewares=auth
+
+  plausible:
+    image: plausible/analytics:v1
