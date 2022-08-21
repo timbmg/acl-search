@@ -1,20 +1,17 @@
 <template>
   <div class="card">
     <h5 class="card-title">
-      {{publication.title}}
+        {{publication.title}}
     </h5>
     <div class="card-subtitle">
-      <a :href="aclUrl" target="_blank" alt="Go to publication in ACL Antology"><span>&#128213;</span></a>
-      <span class="bibkey" @click="copyBibtexToClipboard">&#128221;</span>
+      <span class="tooltip-test" title="Go to ACL Anthology"><a :href="aclUrl" target="_blank">&#128213;</a></span>
+      <span class="bibkey tooltip-test" @click="copyBibtexToClipboard" title="Copy Bibkey">&#128221;</span>
       <span class="spacer"> | </span>
       <span>{{publication.conference_short}}</span> <span>{{publication.year}}</span> 
       <span class="spacer"> | </span>
       <span v-for="(author, authorIndex) in publication.authors" :key="authorIndex">
         {{author.firstname}} {{author.lastname}}<span v-if="authorIndex < publication.authors.length - 1">, </span>
       </span>
-    </div>
-    <div class="card-body">
-      
     </div>
   </div>
 </template>
