@@ -87,6 +87,7 @@ services:
     environment:
       ELASTICSEARCH_HOST: elasticsearch
       ELASTICSEARCH_PORT: 9200
+      CORS_ALLOW_ORIGINS: https://aclsearch.live
     env_file:
       - .env
     labels:
