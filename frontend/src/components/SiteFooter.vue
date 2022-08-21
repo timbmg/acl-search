@@ -4,7 +4,7 @@
       <div class="col-1"></div>
       <div class="col-3">
         <h5>&#129330; Sponsor</h5>
-        If you find this little website helpful, please consider <a href="https://ko-fi.com/timbmg" target="_blank">supporting</a> <del>my caffine addtion</del> its further development with a cup of coffee &#9749;
+        If you find this little website helpful, please consider <a href="https://ko-fi.com/timbmg" target="_blank">supporting</a> <del>my caffine addiction</del> its further development with a cup of coffee &#9749;
       </div>
       <div class="col-3">
         <h5>&#128073; Links</h5>
