@@ -1,15 +1,13 @@
-from typing import Dict, List
-from fastapi import APIRouter
+from typing import List
+from fastapi import APIRouter, Depends
 
 from search.core import ElasticSearchClient
-
-elasticsearch_client = ElasticSearchClient()
 
 router = APIRouter()
 
 
 @router.get("/conferences", response_model=List[str])
-def get_conferences():
+def get_conferences(elasticsearch_client=Depends(ElasticSearchClient)):
     conferences_to_counts = elasticsearch_client.get_unique_value_conuts(
         index="publications", field="conference_short"
     )

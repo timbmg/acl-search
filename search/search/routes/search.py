@@ -1,13 +1,10 @@
 from typing import List, Optional
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Depends, Query
 from cachetools import cached, TTLCache
 
 from search.core import ElasticSearchClient
 from search.models import Publication
-
-elasticsearch_client = ElasticSearchClient()
-
 router = APIRouter()
 
 
@@ -27,6 +24,7 @@ def get_publication(
     ),
     from_: Optional[int] = None,
     size: Optional[int] = None,
+    elasticsearch_client=Depends(ElasticSearchClient),
 ):
     conferences_to_include, conferences_to_exclude = [], []
     if conferences:
