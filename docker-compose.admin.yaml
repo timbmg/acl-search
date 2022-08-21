@@ -1,0 +1,44 @@
+version: "3.7"
+
+x-restart-policy: 
+  restart: &default-restart-policy unless-stopped
+
+services:
+  traefik:
+    labels:
+      - traefik.http.routers.traefik.rule=hostregexp(`{host:.+}`)"
+      - traefik.http.routers.traefik.service=api@internal
+      - traefik.http.routers.traefik.middlewares=auth
+      - traefik.http.middlewares.auth.basicauth.users=admin:${ACL_SEARCH_ADMIN_PASSWORD}
+  flower:
+    image: mher/flower:1.2
+    restart: *default-restart-policy
+    command: >
+      celery 
+      --broker=amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbitmq:5672// 
+      flower --host=0.0.0.0 --port=5555 --persistent=true --url_prefix=admin/flower
+    expose:
+      - 5555
+    env_file:
+      - ./rabbitmq/.env
+    depends_on:
+      - rabbitmq
+    labels:
+    - traefik.enable=true
+    - traefik.http.routers.flower.rule=PathPrefix(`/admin/flower`)
+    - traefik.http.routers.flower.middlewares=auth
+
+  dozzle:
+    image: amir20/dozzle:v4.0.1
+    restart: *default-restart-policy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      DOZZLE_NO_ANALYTICS: "true"
+      DOZZLE_LEVEL: DEBUG
+      DOZZLE_BASE: /admin/logs
+    
+    labels:
+    - traefik.enable=true
+    - traefik.http.routers.dozzle.rule=PathPrefix(`/admin/logs`)
+    - traefik.http.routers.dozzle.middlewares=auth

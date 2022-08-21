@@ -1,4 +1,5 @@
 version: "3.7"
+
 x-restart-policy: 
   restart: &default-restart-policy unless-stopped
   
@@ -18,10 +19,7 @@ services:
       - --accesslog.filepath=/var/log/traefik/access.log.json
     labels:
       - traefik.enable=true
-      - traefik.http.routers.traefik.rule=PathPrefix(`/dashboard`) || PathPrefix(`/api`)
-      - traefik.http.routers.traefik.service=api@internal
-      - traefik.http.routers.traefik.middlewares=auth
-      - traefik.http.middlewares.auth.basicauth.users=admin:${ACL_SEARCH_ADMIN_PASSWORD}
+
     ports:
       - 80:80
     volumes:
@@ -38,7 +36,8 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.frontend.priority=1
-      - traefik.http.routers.frontend.rule=Host(`185.198.27.95`)
+      # - traefik.http.routers.frontend.rule=Host(`aclsearch.live`)
+      - traefik.http.routers.frontend.rule=Host(`localhost`)
   
   index-worker: &index
     image: timbmg/acl-search-index:latest
@@ -78,7 +77,7 @@ services:
       - .env
     labels:
       - traefik.enable=true
-      - traefik.http.routers.index.rule=PathPrefix(`/api/search`)
+      - traefik.http.routers.search.rule=PathPrefix(`/api/search`)
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.3.3
@@ -127,39 +126,6 @@ services:
       interval: 30s
       timeout: 30s
       retries: 3
-
-  flower:
-    image: mher/flower:1.2
-    restart: *default-restart-policy
-    command: >
-      celery 
-      --broker=amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbitmq:5672// 
-      flower --host=0.0.0.0 --port=5555 --persistent=true --url_prefix=admin/flower
-    expose:
-      - 5555
-    env_file:
-      - ./rabbitmq/.env
-    depends_on:
-      - rabbitmq
-    labels:
-    - traefik.enable=true
-    - traefik.http.routers.flower.rule=PathPrefix(`/admin/flower`)
-    - traefik.http.routers.flower.middlewares=auth
-
-  dozzle:
-    image: amir20/dozzle:latest
-    restart: *default-restart-policy
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      DOZZLE_NO_ANALYTICS: "true"
-      DOZZLE_LEVEL: DEBUG
-      DOZZLE_BASE: /admin/logs
-    
-    labels:
-    - traefik.enable=true
-    - traefik.http.routers.dozzle.rule=PathPrefix(`/admin/logs`)
-    - traefik.http.routers.dozzle.middlewares=auth
 
 volumes:
   elasticsearch_data:
