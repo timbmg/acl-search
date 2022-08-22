@@ -1,8 +1,8 @@
 <template>
-  <div class="container">
+  <div class="content container d-flex flex-column" style="min-height: calc(100vh - 220px)">
     <div class="row">
-      <div class="col-1 d-sm-none d-md-block align-middle">
-        <img src="/aclsearch.png" alt="ACL Search" height="40">
+      <div class="col-1 d-none d-sm-none d-md-block align-middle">
+        <img src="/aclsearch.png" alt="ACL Search" width="56">
       </div>
       <div class="col-11">
         <SearchBar @search="searchResultPublications"/>
@@ -18,7 +18,7 @@
     </div> -->
   </div>
   
-  <div class="fixed-bottom container-fluid">
+  <div class="mt-auto">
     <SiteFooter/>
   </div>
 </template>
@@ -61,11 +61,5 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
-}
-.fixed-bottom {
-  padding: 0;
-}
-body {
-  margin-bottom: 180px;
 }
 </style>
