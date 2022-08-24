@@ -16,12 +16,23 @@ services:
       - --accesslog.filepath=/var/log/traefik/access.log.json
       - --providers.docker=true
       - --providers.docker.exposedbydefault=false
+      
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entrypoints.web.http.redirections.entrypoint.scheme=https
+
       - --certificatesresolvers.le.acme.tlschallenge=true
       - --certificatesresolvers.le.acme.email=${ACL_SERACH_LETS_ENCRYPT_EMAIL}
-      - --certificatesResolvers.le.acme.httpChallenge.entrypoint=web
+      - --certificatesresolvers.le.acme.dnschallenge=true
+      - --certificatesresolvers.le.acme.dnschallenge.provider=cloudflare
       - --certificatesresolvers.le.acme.storage=/certs/acme.json
+      - --certificatesresolvers.le.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
+
+      - --entrypoints.websecure.http.tls=true
+      - --entrypoints.websecure.http.tls.certResolver=le
+      - --entrypoints.websecure.http.tls.domains[0].main=aclsearch.live
+      - --entrypoints.websecure.http.tls.domains[0].sans=*.aclsearch.live
     labels:
       - traefik.enable=true
       - traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)
@@ -29,7 +40,9 @@ services:
       - traefik.http.routers.http-catchall.middlewares=https-redirect
       - traefik.http.middlewares.https-redirect.redirectscheme.scheme=https
       - traefik.http.middlewares.https-redirect.redirectscheme.permanent=true
-
+    environment:
+      - CF_API_EMAIL=${ACL_SERACH_LETS_ENCRYPT_EMAIL}
+      - CF_API_KEY=${CLOUDFLARE_API_TOKEN}
     ports:
       - 80:80
       - 443:443
