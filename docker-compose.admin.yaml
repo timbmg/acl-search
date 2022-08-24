@@ -6,7 +6,6 @@ x-restart-policy:
 services:
   traefik:
     labels:
-      - traefik.http.routers.traefik.rule=hostregexp(`{host:.+}`)"
       - traefik.http.routers.traefik.service=api@internal
       - traefik.http.routers.traefik.middlewares=auth
       - traefik.http.middlewares.auth.basicauth.users=admin:${ACL_SEARCH_ADMIN_PASSWORD}
@@ -49,5 +48,45 @@ services:
       - traefik.http.routers.dozzle.rule=PathPrefix(`/admin/logs`)
       - traefik.http.routers.dozzle.middlewares=auth
 
+  plausible_db:
+    image: postgres:12
+    restart: always
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=postgres
+
+  plausible_events_db:
+    image: yandex/clickhouse-server:21.3.2.5
+    restart: always
+    volumes:
+      - event-data:/var/lib/clickhouse
+      - ./clickhouse/clickhouse-config.xml:/etc/clickhouse-server/config.d/logging.xml:ro
+      - ./clickhouse/clickhouse-user-config.xml:/etc/clickhouse-server/users.d/logging.xml:ro
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+
   plausible:
-    image: plausible/analytics:v1
+    image: plausible/analytics:latest
+    restart: always
+    command: sh -c "sleep 10 && /entrypoint.sh db createdb && /entrypoint.sh db migrate && /entrypoint.sh db init-admin && /entrypoint.sh run"
+    depends_on:
+      - plausible_db
+      - plausible_events_db
+    env_file:
+      - ./plausible/.env
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.plausible.entrypoints=websecure
+      - traefik.http.routers.plausible.tls=true
+      - traefik.http.routers.plausible.tls.certresolver=le
+      - traefik.http.routers.plausible.rule=Host(`analytics.aclsearch.live`)
+      # - traefik.http.routers.plausible.middlewares=auth
+
+volumes:
+  postgres-data:
+    driver: local
+  event-data:
+    driver: local
