@@ -10,7 +10,7 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-11 offset-1">
+        <div class="col-11 offset-sm-0 offset-md-1">
           <SearchFilter @yearUpdate="yearUpdate"/>
         </div>
       </div>

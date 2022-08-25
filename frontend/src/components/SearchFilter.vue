@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="row">
-            <div class="col-3">
+            <div class="col-6">
                 <a class="filter text-secondary" data-bs-toggle="collapse" href="#collapseYearFilter" aria-expanded="false" aria-controls="collapseYearFilter">
                    <i class="bi bi-filter"></i> Year {{minYear}} - {{maxYear}}
                 </a>
