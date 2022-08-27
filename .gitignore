@@ -1,5 +1,6 @@
 .env
 .venv
+.vscode
 *.code-workspace
 __pycache__
 .pytest_cache
