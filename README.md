@@ -1,9 +1,10 @@
 
 <div align="center">
 <img src="imgs/aclsearch.png" width="200"/>
-<h3>ACL Search</h3>
+<h3><a href="https://aclsearch.live" target="_blank">ACL Search</a></h3>
 <p>A search-as-you-type web app for the <a href="https://aclanthology.org" target="_blank">ACL Anthology</a></p>
 </div>
+
 
 ## Architecture
 The search engine relies on [Elasticsearch](https://www.elastic.co/), specifically its [search-as-you-type](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-as-you-type.html) feature. Instead of only indexing full words, it creates n-grams of the text for faster retrieval.
@@ -18,3 +19,7 @@ The index service checks for new files in the [ACL Anthology github](https://git
 
 
 
+## Preview
+<div align="center">
+<img src="https://user-images.githubusercontent.com/11020443/186634826-86a125c9-7d90-4c12-ba07-bba3404962ae.gif" width="600"/>
+</div>
