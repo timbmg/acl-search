@@ -106,7 +106,7 @@ export default {
       } else {
         this.from = 0;
       }
-      let params = URLSearchParams();
+      let params = new URLSearchParams();
       params.append('query', this.query);
       params.append('year_gte', this.minYear);
       params.append('year_lte', this.maxYear);
@@ -115,7 +115,7 @@ export default {
       for (let i = 0; i < this.venuesToInclude.length; i++) {
         params.append('venues', this.venuesToInclude[i]);
       }
-      
+
       var start = new Date().getTime();
       axios.get(
           `${process.env.VUE_APP_SEARCH_URL}/api/search/search/publications`,
