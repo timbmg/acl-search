@@ -2,10 +2,10 @@ import logging
 from typing import Dict, List, Optional
 from elasticsearch import Elasticsearch
 from elasticsearch_dsl import A, Search
-from elasticsearch_dsl.query import Bool, MultiMatch
+from elasticsearch_dsl.query import Bool, MultiMatch, MatchAll
 
 
-from search.models.elasticsearch import Publication as ESPublication
+from search.models.elasticsearch import Publication as ESPublication, Venue as ESVenue
 from search.models import PublicationSearchResults, PublicationSearchResult, Publication
 from search.settings import ElasticSearchSettings
 
@@ -43,8 +43,8 @@ class ElasticSearchClient:
     def search_publications(
         self,
         query: str,
-        conferences_to_include: Optional[List[str]] = None,
-        conferences_to_exclude: Optional[List[str]] = None,
+        venues_to_include: Optional[List[str]] = None,
+        venues_to_exclude: Optional[List[str]] = None,
         year_gte: Optional[int] = None,
         year_lte: Optional[int] = None,
         from_: Optional[int] = None,
@@ -70,10 +70,10 @@ class ElasticSearchClient:
             extra_params["size"] = size
         if extra_params:
             s = s.extra(**extra_params)
-        if conferences_to_include:
-            s = s.filter("terms", conference_short=conferences_to_include)
-        if conferences_to_exclude:
-            s = s.exclude("terms", conference_short=conferences_to_exclude)
+        if venues_to_include:
+            s = s.filter("terms", venue_short=venues_to_include)
+        if venues_to_exclude:
+            s = s.exclude("terms", venue_short=venues_to_exclude)
         if year_gte:
             s = s.filter("range", year={"gte": year_gte})
         if year_lte:
@@ -100,3 +100,11 @@ class ElasticSearchClient:
             for b in response["aggregations"]["unique_values"]["buckets"]
         }
         return value_to_count
+
+    def get_venues(self) -> List[Dict]:
+        s = ESVenue.search(using=self.es)
+        s.query = MatchAll()
+        total = s.count()
+        s = s[0:total]
+        response = s.execute()
+        return [r.to_dict() for r in response]

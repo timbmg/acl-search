@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 
 from search.routes.search import router as search_router
-from search.routes.publications import router as publications_router
+from search.routes.venues import router as venues_router
 
 router = APIRouter(prefix="/api")
 router.include_router(search_router, prefix="/search")
-router.include_router(publications_router, prefix="/publications")
+router.include_router(venues_router, prefix="/venues")

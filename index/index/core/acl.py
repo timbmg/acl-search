@@ -21,6 +21,18 @@ class ACLClient:
             if "oldstyle_letter" in v
         }
 
+    def get_venues(self) -> Dict:
+        return [
+            {
+                "_id": k,
+                "acronym": v["acronym"],
+                "name": v["name"],
+                "is_acl": v.get("is_acl", False),
+                "is_toplevel": v.get("is_toplevel", False),
+            }
+            for k, v in self.venues.items()
+        ]
+
     def get_conference_from_filename(self, filename: str) -> str:
         # remove extension
         *filename_wo_extension, _ = filename.split(".")
@@ -35,7 +47,7 @@ class ACLClient:
         else:
             raise ValueError(f"Unknown filename style {filename}.")
 
-        if conference not in self.conferences:
+        if conference not in self.venues.keys():
             raise ValueError(f"Unknown conference {conference}.")
 
         return conference
@@ -55,11 +67,10 @@ class ACLClient:
         return result
 
     def get_publications_from_xml(self, xml: str, conference: str) -> Dict:
-        
 
         tree = ElementTree.fromstring(xml)
         for volume in tree.iter("volume"):
-            
+
             if not volume.attrib["id"]:
                 # skip volume in meta tag
                 continue

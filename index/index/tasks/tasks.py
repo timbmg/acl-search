@@ -3,6 +3,7 @@ from typing import Union
 
 from celery.schedules import crontab
 from celery.utils.log import get_task_logger
+from celery.signals import worker_ready
 
 from index.core import ACLClient, GithubClient, ElasticSearchClient
 from index.core.celery import app as celery_app
@@ -24,6 +25,13 @@ def setup_periodic_tasks(sender, **kwargs):
         check_new_files_in_github.s(),
         name="check_new_files_in_github_every_day",
     )
+
+
+@worker_ready.connect
+def index_venues(**_):
+    venues = acl_client.get_venues()
+    for venue in venues:
+        elasticsearch_client.index_venue(venue)
 
 
 @celery_app.task
@@ -49,7 +57,7 @@ def check_new_files_in_github():
                 (file,), countdown=files_scheduled * 60
             )
             files_scheduled += 1
-            
+
             logger.info(
                 "Scheduled to index from file={} with task_id={}.".format(
                     file["name"], task.id
@@ -62,9 +70,9 @@ def index_publications_from_file(file):
 
     xml = acl_client.get_xml_from_url(url=file["download_url"])
 
-    conference = acl_client.get_conference_from_filename(filename=file["name"])
+    venue = acl_client.get_venue_from_filename(filename=file["name"])
 
-    for publication in acl_client.get_publications_from_xml(xml, conference):
+    for publication in acl_client.get_publications_from_xml(xml, venue):
         elasticsearch_client.index_publication(publication)
 
     elasticsearch_client.index_file(file)

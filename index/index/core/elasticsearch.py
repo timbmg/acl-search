@@ -2,10 +2,12 @@ import logging
 from typing import Dict, List, Union
 
 from elasticsearch import Elasticsearch
-from elasticsearch_dsl import Index, Document
+from elasticsearch_dsl import Document, Index
 from elasticsearch_dsl.exceptions import ValidationException
-from index.models.elasticsearch import File, Publication
+
+from index.models.elasticsearch import File, Publication, Venue
 from index.settings import ElasticSearchSettings
+
 
 logger = logging.getLogger(__name__)
 
@@ -23,10 +25,17 @@ class ElasticSearchClient:
         )
         self.create_index_if_not_exists(File)
         self.create_index_if_not_exists(Publication)
+        self.create_index_if_not_exists(Venue)
 
     def create_index_if_not_exists(self, model: Document):
         if not Index(model.Index.name).exists(using=self.es):
             model.init(using=self.es)
+
+    def index_venue(self, venue: Union[Venue, Dict]):
+        if isinstance(venue, dict):
+            _id = venue.pop("_id")
+            venue = Venue(**venue, meta={"id": _id})
+        venue.save(using=self.es)
 
     def index_publication(self, publication: Union[Publication, Dict]):
 
