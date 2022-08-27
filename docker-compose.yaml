@@ -111,7 +111,7 @@ services:
       - traefik.http.routers.search.rule=PathPrefix(`/api/search`)
       - traefik.http.routers.search.middlewares=search-stripprefix,search-addprefix 
       - traefik.http.middlewares.search-stripprefix.stripprefix.prefixes=/api/search
-      - traefik.http.middlewares.search-addprefix.addPrefix.prefix=/api"
+      - traefik.http.middlewares.search-addprefix.addPrefix.prefix=/api
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.3.3
