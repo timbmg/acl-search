@@ -100,7 +100,8 @@ services:
     environment:
       ELASTICSEARCH_HOST: elasticsearch
       ELASTICSEARCH_PORT: 9200
-      CORS_ALLOW_ORIGINS: https://aclsearch.live
+      # CORS_ALLOW_ORIGINS: https://aclsearch.live
+      CORS_ALLOW_ORIGINS: http://localhost:8080
     env_file:
       - .env
     labels:
@@ -109,6 +110,9 @@ services:
       - traefik.http.routers.search.tls=true
       - traefik.http.routers.search.tls.certresolver=le
       - traefik.http.routers.search.rule=PathPrefix(`/api/search`)
+      - traefik.http.routers.search.middlewares=search-stripprefix,search-addprefix 
+      - traefik.http.middlewares.search-stripprefix.stripprefix.prefixes=/api/search
+      - traefik.http.middlewares.search-addprefix.addPrefix.prefix=/api"
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.3.3

@@ -118,7 +118,7 @@ export default {
       }
       var start = new Date().getTime();
       axios.get(
-          `${process.env.VUE_APP_SEARCH_URL}/api/search/publications`,
+          `${process.env.VUE_APP_SEARCH_URL}/api/search/search/publications`,
           {
               params: params
           }
@@ -135,7 +135,7 @@ export default {
     },
     fetchVenues() {
       axios.get(
-          `${process.env.VUE_APP_SEARCH_URL}/api/venues`
+          `${process.env.VUE_APP_SEARCH_URL}/api/search/venues`
       ).then(response => {
           this.venues = response.data
       })
