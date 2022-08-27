@@ -94,7 +94,6 @@ export default {
     },
     loadMore() {
       this.search(true);
-      console.log(this.publications.search_results.length);
     },
     search(push=false) {
       // this.$router.push({query: {q: this.query}})
@@ -118,7 +117,6 @@ export default {
         params.venues = encodeURIComponent(JSON.stringify(this.venuesToInclude));
       }
       var start = new Date().getTime();
-      console.log('searching for ' + this.query + ' from ' + this.minYear + ' to ' + this.maxYear)
       axios.get(
           `${process.env.VUE_APP_SEARCH_URL}/api/search/publications`,
           {
