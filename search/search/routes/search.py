@@ -4,12 +4,13 @@ from fastapi import APIRouter, Depends, Query
 from cachetools import cached, TTLCache
 
 from search.core import ElasticSearchClient
-from search.models import Publication
+from search.models import PublicationSearchResults
+
 router = APIRouter()
 
 
-@cached(cache=TTLCache(maxsize=100, ttl=600))
-@router.get("/publications", response_model=List[Publication])
+@cached(cache=TTLCache(maxsize=1024, ttl=600))
+@router.get("/publications", response_model=PublicationSearchResults)
 def get_publication(
     query: str,
     conferences: Optional[List[str]] = Query(

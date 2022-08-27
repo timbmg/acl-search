@@ -16,3 +16,16 @@ class Publication(BaseModel):
     url: str
     authors: List[Author]
     abstract: str = Field(None)
+
+    @classmethod
+    def from_es_source(cls, _source: dict):
+        return cls(
+            conference_short=_source["conference_short"],
+            conference_long=_source["conference_long"],
+            year=_source["year"],
+            bibkey=_source["bibkey"],
+            url=_source["url"],
+            title=_source["title"],
+            abstract=_source.get("abstract", ""),
+            authors=_source["authors"],
+        )

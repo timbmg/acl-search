@@ -5,7 +5,8 @@ from elasticsearch_dsl import A, Search
 from elasticsearch_dsl.query import Bool, MultiMatch
 
 
-from search.models.elasticsearch import Publication
+from search.models.elasticsearch import Publication as ESPublication
+from search.models import PublicationSearchResults, PublicationSearchResult, Publication
 from search.settings import ElasticSearchSettings
 
 logger = logging.getLogger(__name__)
@@ -23,6 +24,22 @@ class ElasticSearchClient:
             sniff_on_connection_fail=True,
         )
 
+    def _es_search_response_to_publication_search_results(
+        self, response: Dict
+    ) -> PublicationSearchResults:
+        search_results = [
+            PublicationSearchResult(
+                publication=Publication.from_es_source(p["_source"]),
+                score=p["_score"],
+            )
+            for p in response["hits"]["hits"]
+        ]
+        return PublicationSearchResults(
+            search_results=search_results,
+            took=response["took"],
+            hits=response["hits"]["total"]["value"],
+        )
+
     def search_publications(
         self,
         query: str,
@@ -32,9 +49,9 @@ class ElasticSearchClient:
         year_lte: Optional[int] = None,
         from_: Optional[int] = None,
         size: Optional[int] = None,
-    ) -> List[Dict]:
+    ) -> PublicationSearchResults:
 
-        s = Publication.search(using=self.es)
+        s = ESPublication.search(using=self.es)
 
         s.query = Bool(
             must=[
@@ -66,7 +83,11 @@ class ElasticSearchClient:
 
         response = s.execute()
 
-        return [p.to_dict() for p in response]
+        logger.info("Response: {}".format(response.to_dict()))
+
+        return self._es_search_response_to_publication_search_results(
+            response.to_dict()
+        )
 
     def get_unique_value_conuts(self, index: str, field: str) -> Dict[str, int]:
         s = Search(using=self.es, index=index)
