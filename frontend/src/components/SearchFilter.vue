@@ -32,7 +32,7 @@
                     <div class="row gx-0">
                         <div class="col">
                                 <div class="form-check form-check-inline venue-checkbox">
-                                    <input class="form-check-input" type="radio" name="venueRadio"  value="all" id="all" @change="onVenueCheckboxChange($event)" checked>
+                                    <input class="form-check-input" type="radio" name="venueRadio"  value="all" id="all" @change="onVenueCheckboxChange($event)">
                                 <label class="form-check-label" for="all" >
                                     All
                                 </label>
@@ -40,7 +40,7 @@
                         </div>
                         <div class="col">
                             <div class=" form-check form-check-inline venue-checkbox">
-                                <input class="form-check-input" type="radio" name="venueRadio"  value="topLevel" id="top-level" @change="onVenueCheckboxChange($event)">
+                                <input class="form-check-input" type="radio" name="venueRadio"  value="topLevel" id="top-level" @change="onVenueCheckboxChange($event)" checked>
                                 <label class="form-check-label" for="top-level">
                                     Top-Level
                                 </label>
