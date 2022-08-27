@@ -76,7 +76,7 @@ export default {
     }
   },
   mounted() {
-    this.fetchVenues()
+    this.fetchVenues();
   },
   methods: {
     queryUpdate(query) {
