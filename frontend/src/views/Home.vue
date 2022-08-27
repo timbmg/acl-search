@@ -106,16 +106,16 @@ export default {
       } else {
         this.from = 0;
       }
-      var params = {
-          query: this.query,
-          year_gte: this.minYear,
-          year_lte: this.maxYear,
-          from_: this.from,
-          size: this.size
+      let params = URLSearchParams();
+      params.append('query', this.query);
+      params.append('year_gte', this.minYear);
+      params.append('year_lte', this.maxYear);
+      params.append('from_', this.from);
+      params.append('size', this.size);
+      for (let i = 0; i < this.venuesToInclude.length; i++) {
+        params.append('venues', this.venuesToInclude[i]);
       }
-      if (this.venuesToInclude.length > 0) {
-        params.venues = encodeURIComponent(JSON.stringify(this.venuesToInclude));
-      }
+      
       var start = new Date().getTime();
       axios.get(
           `${process.env.VUE_APP_SEARCH_URL}/api/search/search/publications`,
