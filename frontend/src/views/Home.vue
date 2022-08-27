@@ -12,14 +12,14 @@
             </div>
             <div class="row">
                 <div class="col-11 offset-sm-0 offset-md-1">
-                  <SearchFilter @yearUpdate="yearUpdate"/>
+                  <SearchFilter :venues="venues" @yearUpdate="yearUpdate" @venuesUpdate="venuesUpdate" />
                 </div>
             </div>
           </div>
           <div  v-if="publications">
             <div class="row" v-for="(publication, publicationIndex) in publications.search_results" :key="publicationIndex">
               <div class="col gy-3">
-                <SearchResult :publication="publication.publication"/>
+                <SearchResult :publication="publication.publication" :score="publication.score"/>
               </div>
             </div>
             <div class="row">
@@ -70,12 +70,14 @@ export default {
       publications: null,
       hits: 0,
       from: 0,
-      size: 10
+      size: 10,
+      venues: [],
+      venuesToInclude: [],
     }
   },
-  // created() {
-  //   this.query = this.$router.query.q
-  // },
+  mounted() {
+    this.fetchVenues()
+  },
   methods: {
     queryUpdate(query) {
       this.query = query;
@@ -84,6 +86,10 @@ export default {
     yearUpdate(values) {
       this.minYear = values[0];
       this.maxYear = values[1];
+      this.search();
+    },
+    venuesUpdate(venues) {
+      this.venuesToInclude = venues;
       this.search();
     },
     loadMore() {
@@ -101,18 +107,22 @@ export default {
       } else {
         this.from = 0;
       }
+      var params = {
+          query: this.query,
+          year_gte: this.minYear,
+          year_lte: this.maxYear,
+          from_: this.from,
+          size: this.size
+      }
+      if (this.venuesToInclude.length > 0) {
+        params.venues = encodeURIComponent(JSON.stringify(this.venuesToInclude));
+      }
       var start = new Date().getTime();
       console.log('searching for ' + this.query + ' from ' + this.minYear + ' to ' + this.maxYear)
       axios.get(
           `${process.env.VUE_APP_SEARCH_URL}/api/search/publications`,
           {
-              params: {
-                  query: this.query,
-                  year_gte: this.minYear,
-                  year_lte: this.maxYear,
-                  from_: this.from,
-                  size: this.size
-              }
+              params: params
           }
       ).then(response => {
           this.took = new Date().getTime() - start;
@@ -122,6 +132,14 @@ export default {
             this.publications = response.data
             this.hits = response.data.hits
           }
+      })
+      .catch(error => {console.log(error)})
+    },
+    fetchVenues() {
+      axios.get(
+          `${process.env.VUE_APP_SEARCH_URL}/api/venues`
+      ).then(response => {
+          this.venues = response.data
       })
       .catch(error => {console.log(error)})
     }

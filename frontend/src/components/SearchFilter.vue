@@ -1,21 +1,67 @@
 <template>
     <div>
         <div class="row">
-            <div class="col-6">
-                <a class="filter text-secondary" data-bs-toggle="collapse" href="#collapseYearFilter" aria-expanded="false" aria-controls="collapseYearFilter">
-                   <i class="bi bi-filter"></i> Year {{minYear}} - {{maxYear}}
-                </a>
-                <div class="collapse" id="collapseYearFilter">
+            <div class="col-auto dropdown">
+                <!-- <button type="button" class="btn btn-link btn-outline-dark  dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-filter"></i> Year {{minYear}} - {{maxYear}}</button> -->
+                <div class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <!-- <i class="bi bi-filter"></i>  -->
+                    Year: {{minYear}} - {{maxYear}}
+                </div>
+                <div class="dropdown-menu p-4 text-muted" style="width: 240px; min-height: 150px">
                     <div class="row gy-3">
                         <div class="col-6">
-                            <input type="number" v-model="minYear" :min="minRange" :max="maxRange" class="form-control" @input="onUpdateMinMaxValue($event, 'min')">
+                            <input type="number" v-model="minYear" :min="minRange" :max="maxRange" class="form-control year-input" @input="onUpdateMinMaxValue($event, 'min')">
                         </div>
                         <div class="col-6">
-                            <input type="number" v-model="maxYear" :min="minRange" :max="maxRange" class="form-control" @input="onUpdateMinMaxValue($event, 'max')">
+                            <input type="number" v-model="maxYear" :min="minRange" :max="maxRange" class="form-control year-input" @input="onUpdateMinMaxValue($event, 'max')">
                         </div>
                         <div class="col-12">
                             <div id="slider" ref="slider" class="slider-styled noUi-sm noUi-value-sub"></div>
                         </div>
+                    </div>
+                </div>
+
+            </div>
+            
+            <div class="col-auto dropdown">
+                <div class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <!-- <i class="bi bi-filter"></i>  -->
+                    Venues
+                </div>
+                <div class="dropdown-menu p-2 text-muted" style="width: 320px;">
+                    <div class="row gx-0">
+                        <div class="col">
+                                <div class="form-check form-check-inline venue-checkbox">
+                                    <input class="form-check-input" type="radio" name="venueRadio"  value="all" id="all" @change="onVenueCheckboxChange($event)" checked>
+                                <label class="form-check-label" for="all" >
+                                    All
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class=" form-check form-check-inline venue-checkbox">
+                                <input class="form-check-input" type="radio" name="venueRadio"  value="topLevel" id="top-level" @change="onVenueCheckboxChange($event)">
+                                <label class="form-check-label" for="top-level">
+                                    Top-Level
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-check form-check-inline venue-checkbox">
+                                <input class="form-check-input" type="radio" name="venueRadio"  value="acl" id="acl" @change="onVenueCheckboxChange($event)">
+                                <label class="form-check-label" for="acl">
+                                    ACL
+                                </label>
+                            </div>
+                        </div>
+                        <!-- <li><hr class="dropdown-divider"></li>
+                        <div>Top-Level</div>
+                        <div v-for="(venue, venueIndex) in topLevelVenues" :key="venueIndex" class="col-4 form-check form-check-inline venue-checkbox">
+                            <input class="form-check-input" type="checkbox" value="" :id="venue.acronym">
+                            <label class="form-check-label" :for="venue.acronym">
+                                {{venue.acronym}}
+                            </label>
+                        </div> -->
                     </div>
                 </div>
             </div>
@@ -27,6 +73,11 @@
 import noUiSlider from 'nouislider';
 import wNumb from 'wnumb';
 export default {
+    props: {
+        venues: {
+            type: Array
+        },
+    },
     data() {
         return {
             minRange: 1958,
@@ -67,11 +118,21 @@ export default {
             } else {
                 this.maxYear = e.target.value;
             }
-            // console.log(e.target.value);
-            // console.log(x);
-            // console.log(this.minValue);
-            // console.log(this.maxValue);
             this.$refs.slider.noUiSlider.set([this.minYear, this.maxYear]);
+        },
+        onVenueCheckboxChange(e) {
+            var selectedVenues;
+            if (e.target.value == "topLevel") {
+                selectedVenues = this.venues.filter(venue => venue.is_toplevel)
+            }
+            else if (e.target.value == "acl") {
+                selectedVenues = this.venues.filter(venue => venue.is_acl)
+            }
+            else {
+                selectedVenues = [];
+            }
+            this.selectedVenues = selectedVenues.map(venue => venue.acronym);
+            this.$emit('venuesUpdate', this.selectedVenues);
         }
     },
     watch: {
@@ -88,6 +149,10 @@ export default {
             handler() {
                 this.$emit('yearUpdate', [this.minYear, this.maxYear]);
             }
+        },
+        venues() {
+            this.aclVenues = this.venues.filter(venue => venue.is_acl);
+            this.topLevelVenues = this.venues.filter(venue => venue.is_toplevel);
         }
     }
 }
@@ -97,6 +162,13 @@ export default {
 .filter {
     color: var(--bs-primary);
 
+}
+.year-input {
+    max-width: 84px;
+}
+.venue-checkbox {
+    margin-right: 0;
+    /* border: 1px solid var(--bs-primary);     */
 }
 #slider {
     height: 10px;
