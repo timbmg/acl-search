@@ -29,11 +29,14 @@ def get_publication(
 ):
     venues_to_include, venues_to_exclude = [], []
     if venues:
-        for c in venues:
-            if c.startswith("-"):
-                venues_to_exclude.append(c[1:])
+        for v in venues:
+            # HACK: Somehow ES has indexed the venues in lowercase, 
+            # so we need to lower them here.
+            v = v.lower()
+            if v.startswith("-"):
+                venues_to_exclude.append(v[1:])
             else:
-                venues_to_include.append(c)
+                venues_to_include.append(v)
 
     venues_to_include = venues_to_include or None
     venues_to_exclude = venues_to_exclude or None
