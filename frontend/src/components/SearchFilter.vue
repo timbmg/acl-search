@@ -110,6 +110,9 @@ export default {
         this.$refs.slider.noUiSlider.on('update',(values, handle) => {
             this[handle ? 'maxYear' : 'minYear'] = parseInt(values[handle]);
         });
+
+        this.$emit('venuesUpdate', this.venues.filter(venue => venue.is_toplevel).map(venue => venue.acronym));
+
     },
     methods: {
         onUpdateMinMaxValue(e, x) {
