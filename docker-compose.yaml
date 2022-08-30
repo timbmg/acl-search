@@ -31,8 +31,8 @@ services:
 
       - --entrypoints.websecure.http.tls=true
       - --entrypoints.websecure.http.tls.certResolver=le
-      - --entrypoints.websecure.http.tls.domains[0].main=aclsearch.live
-      - --entrypoints.websecure.http.tls.domains[0].sans=*.aclsearch.live
+      - --entrypoints.websecure.http.tls.domains[0].main=aclsear.ch
+      - --entrypoints.websecure.http.tls.domains[0].sans=*.aclsear.ch
     labels:
       - traefik.enable=true
       - traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)
@@ -64,7 +64,7 @@ services:
       - traefik.http.routers.frontend.entrypoints=websecure
       - traefik.http.routers.frontend.tls=true
       - traefik.http.routers.frontend.tls.certresolver=le
-      - traefik.http.routers.frontend.rule=Host(`aclsearch.live`)
+      - traefik.http.routers.frontend.rule=Host(`aclsear.ch`)
   
   index-worker: &index
     image: timbmg/acl-search-index:latest
@@ -100,7 +100,7 @@ services:
     environment:
       ELASTICSEARCH_HOST: elasticsearch
       ELASTICSEARCH_PORT: 9200
-      CORS_ALLOW_ORIGINS: https://aclsearch.live
+      CORS_ALLOW_ORIGINS: https://aclsear.ch
     env_file:
       - .env
     labels:

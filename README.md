@@ -1,7 +1,7 @@
 
 <div align="center">
 <img src="imgs/aclsearch.png" width="200"/>
-<h3><a href="https://aclsearch.live" target="_blank">ACL Search</a></h3>
+<h3><a href="https://aclsear.ch" target="_blank">ACL Search</a></h3>
 <p>A search-as-you-type web app for the <a href="https://aclanthology.org" target="_blank">ACL Anthology</a></p>
 </div>
 

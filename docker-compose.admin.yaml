@@ -82,7 +82,7 @@ services:
       - traefik.http.routers.plausible.entrypoints=websecure
       - traefik.http.routers.plausible.tls=true
       - traefik.http.routers.plausible.tls.certresolver=le
-      - traefik.http.routers.plausible.rule=Host(`analytics.aclsearch.live`)
+      - traefik.http.routers.plausible.rule=Host(`analytics.aclsear.ch`)
       # - traefik.http.routers.plausible.middlewares=auth
 
 volumes:
