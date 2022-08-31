@@ -25,7 +25,7 @@
             <div class="row">
               <div class="col gy-3 gx-3" >
                 <button v-if="publications.search_results.length < hits" class="btn btn-outline-primary btn-pagination" @click="loadMore">Load More</button>
-                <a v-if="publications.search_results.length > 0" class="btn btn-outline-primary btn-pagination" href="#Home" role="button">Back To Top</a>
+                <a v-if="publications.search_results.length > 0" class="btn btn-outline-primary btn-pagination" href="#" role="button">Back To Top</a>
               </div>
             </div>
             <div class="row">
@@ -118,7 +118,8 @@ export default {
 
       var start = new Date().getTime();
       axios.get(
-          `${process.env.VUE_APP_SEARCH_URL}/api/search/search/publications`,
+          // `${process.env.VUE_APP_SEARCH_URL}/api/search/search/publications`,
+          `${process.env.VUE_APP_SEARCH_URL}/api/search/publications`,
           {
               params: params
           }
@@ -135,9 +136,11 @@ export default {
     },
     fetchVenues() {
       axios.get(
-          `${process.env.VUE_APP_SEARCH_URL}/api/search/venues`
+          // `${process.env.VUE_APP_SEARCH_URL}/api/search/venues`
+          `${process.env.VUE_APP_SEARCH_URL}/api/venues`
       ).then(response => {
-          this.venues = response.data
+          this.venues = response.data;
+          this.selectedVenues = this.venues.filter(venue => venue.is_toplevel).map(venue => venue.acronym)
       })
       .catch(error => {console.log(error)})
     }
