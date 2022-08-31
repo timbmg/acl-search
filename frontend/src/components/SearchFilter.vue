@@ -3,7 +3,7 @@
         <div class="row">
             <div class="col-auto dropdown">
                 <!-- <button type="button" class="btn btn-link btn-outline-dark  dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-filter"></i> Year {{minYear}} - {{maxYear}}</button> -->
-                <div class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                <div class="dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                     <!-- <i class="bi bi-filter"></i>  -->
                     Year: {{minYear}} - {{maxYear}}
                 </div>
@@ -24,20 +24,13 @@
             </div>
             
             <div class="col-auto dropdown">
-                <div class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                <div class="dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                     <!-- <i class="bi bi-filter"></i>  -->
                     Venues
                 </div>
-                <div class="dropdown-menu p-2 text-muted" style="width: 320px;">
+                <div class="dropdown-menu p-2 text-muted">
                     <div class="row gx-0">
-                        <div class="col">
-                                <div class="form-check form-check-inline venue-checkbox">
-                                    <input class="form-check-input" type="radio" name="venueRadio"  value="all" id="all" @change="onVenueCheckboxChange($event)">
-                                <label class="form-check-label" for="all" >
-                                    All
-                                </label>
-                            </div>
-                        </div>
+                        
                         <div class="col">
                             <div class=" form-check form-check-inline venue-checkbox">
                                 <input class="form-check-input" type="radio" name="venueRadio"  value="topLevel" id="top-level" @change="onVenueCheckboxChange($event)" checked>
@@ -54,14 +47,38 @@
                                 </label>
                             </div>
                         </div>
-                        <!-- <li><hr class="dropdown-divider"></li>
-                        <div>Top-Level</div>
+                        <div class="col">
+                                <div class="form-check form-check-inline venue-checkbox">
+                                    <input class="form-check-input" type="radio" name="venueRadio"  value="all" id="all" @change="onVenueCheckboxChange($event)">
+                                <label class="form-check-label" for="all" >
+                                    All
+                                </label>
+                            </div>
+                        </div>
+                        <li><hr class="dropdown-divider"></li>
+                        <div><h6>Top-Level</h6></div>
                         <div v-for="(venue, venueIndex) in topLevelVenues" :key="venueIndex" class="col-4 form-check form-check-inline venue-checkbox">
                             <input class="form-check-input" type="checkbox" value="" :id="venue.acronym">
                             <label class="form-check-label" :for="venue.acronym">
-                                {{venue.acronym}}
+                                <span class="tooltip-test" :title="venue.name">{{venue.acronym}}</span>
                             </label>
-                        </div> -->
+                        </div>
+                        <li><hr class="dropdown-divider"></li>
+                        <div><h6>ACL</h6></div>
+                        <div v-for="(venue, venueIndex) in aclNotTopLevelVenues" :key="venueIndex" class="col-4 form-check form-check-inline venue-checkbox">
+                            <input class="form-check-input" type="checkbox" value="" :id="venue.acronym">
+                            <label class="form-check-label" :for="venue.acronym">
+                                <span class="tooltip-test" :title="venue.name">{{venue.acronym}}</span>
+                            </label>
+                        </div>
+                        <li><hr class="dropdown-divider"></li>
+                        <div><h6>All</h6></div>
+                        <div v-for="(venue, venueIndex) in remainingVenues" :key="venueIndex" class="col-4 form-check form-check-inline venue-checkbox">
+                            <input class="form-check-input" type="checkbox" value="" :id="venue.acronym">
+                            <label class="form-check-label" :for="venue.acronym">
+                                <span class="venue-checkbox tooltip-test" :title="venue.name">{{venue.acronym}}</span>
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -111,8 +128,6 @@ export default {
             this[handle ? 'maxYear' : 'minYear'] = parseInt(values[handle]);
         });
 
-        this.$emit('venuesUpdate', this.venues.filter(venue => venue.is_toplevel).map(venue => venue.acronym));
-
     },
     methods: {
         onUpdateMinMaxValue(e, x) {
@@ -156,6 +171,8 @@ export default {
         venues() {
             this.aclVenues = this.venues.filter(venue => venue.is_acl);
             this.topLevelVenues = this.venues.filter(venue => venue.is_toplevel);
+            this.aclNotTopLevelVenues = this.venues.filter(venue => !venue.is_toplevel && venue.is_acl);
+            this.remainingVenues = this.venues.filter(venue => !(venue.is_toplevel || venue.is_acl));
         }
     }
 }
@@ -204,6 +221,20 @@ export default {
 .slider-styled .noUi-handle::before,
 .slider-styled .noUi-handle::after {
     display: none;
+}
+.dropdown-menu {
+    width: 360px;
+    max-height: 360px;
+    overflow-y: auto;
+}
+.venue-checkbox {
+    overflow:hidden;
+    /* white-space:nowrap; */
+    -ms-text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    text-overflow:ellipsis;
+    display: inline-block;
+    /* display:block; */
 }
 
 </style>
