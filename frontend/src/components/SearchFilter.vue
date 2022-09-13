@@ -31,7 +31,7 @@
                 <div class="dropdown-menu p-2 text-muted">
                     <div class="row gx-0">
                         
-                        <div class="col">
+                        <!-- <div class="col">
                             <div class=" form-check form-check-inline venue-checkbox">
                                 <input class="form-check-input" type="radio" name="venueRadio"  value="topLevel" id="top-level" @change="onVenueCheckboxChange($event)" checked>
                                 <label class="form-check-label" for="top-level">
@@ -54,27 +54,43 @@
                                     All
                                 </label>
                             </div>
+                        </div> 
+                        <li><hr class="dropdown-divider"></li> -->
+                        <!-- <div><h6>Top-Level</h6></div> -->
+                        <div class="form-check form-check-inline venue-checkbox">
+                            <input class="form-check-input" type="checkbox" name="group-topLevel"  value="group-topLevel" id="group-topLevel" @change="onVenueCheckboxChange($event)">
+                            <label class="form-check-label" for="group-topLevel" >
+                                <h6>Top-Level</h6>
+                            </label>
                         </div>
-                        <li><hr class="dropdown-divider"></li>
-                        <div><h6>Top-Level</h6></div>
                         <div v-for="(venue, venueIndex) in topLevelVenues" :key="venueIndex" class="col-4 form-check form-check-inline venue-checkbox">
-                            <input class="form-check-input" type="checkbox" value="" :id="venue.acronym">
+                            <input class="form-check-input" type="checkbox" :value="venue.acronym" :id="venue.acronym" v-model="selectedVenues" @change="onVenueCheckboxChange($event)">
                             <label class="form-check-label" :for="venue.acronym">
                                 <span class="tooltip-test" :title="venue.name">{{venue.acronym}}</span>
                             </label>
                         </div>
                         <li><hr class="dropdown-divider"></li>
-                        <div><h6>ACL</h6></div>
+                        <div class="form-check form-check-inline venue-checkbox">
+                            <input class="form-check-input" type="checkbox" name="group-acl"  value="group-acl" id="group-acl" @change="onVenueCheckboxChange($event)">
+                            <label class="form-check-label" for="group-acl" >
+                                <h6>ACL</h6>
+                            </label>
+                        </div>
                         <div v-for="(venue, venueIndex) in aclNotTopLevelVenues" :key="venueIndex" class="col-4 form-check form-check-inline venue-checkbox">
-                            <input class="form-check-input" type="checkbox" value="" :id="venue.acronym">
+                            <input class="form-check-input" type="checkbox" :value="venue.acronym" :id="venue.acronym" v-model="selectedVenues" @change="onVenueCheckboxChange($event)">
                             <label class="form-check-label" :for="venue.acronym">
                                 <span class="tooltip-test" :title="venue.name">{{venue.acronym}}</span>
                             </label>
                         </div>
                         <li><hr class="dropdown-divider"></li>
-                        <div><h6>All</h6></div>
+                        <div class="form-check form-check-inline venue-checkbox">
+                            <input class="form-check-input" type="checkbox" name="group-all"  value="group-all" id="group-all" @change="onVenueCheckboxChange($event)">
+                            <label class="form-check-label" for="group-all" >
+                                <h6>All</h6>
+                            </label>
+                        </div>
                         <div v-for="(venue, venueIndex) in remainingVenues" :key="venueIndex" class="col-4 form-check form-check-inline venue-checkbox">
-                            <input class="form-check-input" type="checkbox" value="" :id="venue.acronym">
+                            <input class="form-check-input" type="checkbox" :value="venue.acronym"  :id="venue.acronym" v-model="selectedVenues" @change="onVenueCheckboxChange($event)">
                             <label class="form-check-label" :for="venue.acronym">
                                 <span class="venue-checkbox tooltip-test" :title="venue.name">{{venue.acronym}}</span>
                             </label>
@@ -100,7 +116,14 @@ export default {
             minRange: 1958,
             maxRange: new Date().getFullYear(),
             minYear: new Date().getFullYear() - 5,
-            maxYear: new Date().getFullYear()
+            maxYear: new Date().getFullYear(),
+            selectedVenues: new Set(),
+            topLevelVenues: [],
+            aclNotTopLevelVenues: [],
+            remainingVenues: [],
+            topLevelVenuesAcronyms: [],
+            aclNotTopLevelVenuesAcronyms: [],
+            remainingVenuesAcronyms: []
         }
     },
     mounted() {
@@ -139,17 +162,29 @@ export default {
             this.$refs.slider.noUiSlider.set([this.minYear, this.maxYear]);
         },
         onVenueCheckboxChange(e) {
-            var selectedVenues;
-            if (e.target.value == "topLevel") {
-                selectedVenues = this.venues.filter(venue => venue.is_toplevel)
+            console.log(e.target.value);
+            if (e.target.value.startsWith("group-")) {
+                if (e.target.value == "group-topLevel") {
+                    if (e.target.checked) {
+                        this.topLevelVenuesAcronyms.forEach(venue => this.selectedVenues.add(venue));
+                    } else {
+                        this.topLevelVenuesAcronyms.forEach(venue => this.selectedVenues.delete(venue));
+                    }
+                } else if (e.target.value == "group-acl") {
+                    if (e.target.checked) {
+                        this.aclNotTopLevelVenuesAcronyms.forEach(venue => this.selectedVenues.add(venue));
+                    } else {
+                        this.aclNotTopLevelVenuesAcronyms.forEach(venue => this.selectedVenues.delete(venue));
+                    }
+                } else if (e.target.value == "group-all") {
+                    if (e.target.checked) {
+                        this.remainingVenuesAcronyms.forEach(venue => this.selectedVenues.add(venue));
+                    } else {
+                        this.remainingVenuesAcronyms.forEach(venue => this.selectedVenues.delete(venue));
+                    }
+                } 
             }
-            else if (e.target.value == "acl") {
-                selectedVenues = this.venues.filter(venue => venue.is_acl)
-            }
-            else {
-                selectedVenues = [];
-            }
-            this.selectedVenues = selectedVenues.map(venue => venue.acronym);
+            console.log(this.selectedVenues);
             this.$emit('venuesUpdate', this.selectedVenues);
         }
     },
@@ -169,10 +204,13 @@ export default {
             }
         },
         venues() {
-            this.aclVenues = this.venues.filter(venue => venue.is_acl);
+            // this.aclVenues = this.venues.filter(venue => venue.is_acl).map(venue => venue.acronym);
             this.topLevelVenues = this.venues.filter(venue => venue.is_toplevel);
             this.aclNotTopLevelVenues = this.venues.filter(venue => !venue.is_toplevel && venue.is_acl);
             this.remainingVenues = this.venues.filter(venue => !(venue.is_toplevel || venue.is_acl));
+            this.topLevelVenuesAcronyms = this.venues.filter(venue => venue.is_toplevel).map(venue => venue.acronym);
+            this.aclNotTopLevelVenuesAcronyms = this.venues.filter(venue => !venue.is_toplevel && venue.is_acl).map(venue => venue.acronym);
+            this.remainingVenuesAcronyms = this.venues.filter(venue => !(venue.is_toplevel || venue.is_acl)).map(venue => venue.acronym);
         }
     }
 }
