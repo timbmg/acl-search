@@ -1,6 +1,6 @@
 <template>
     <section id="Home">
-      <div class="content container d-flex flex-column" style="min-height: calc(100vh - 220px)">
+      <div class="content container d-flex flex-column" style="min-height: calc(100vh - 240px)">
           <div style="margin-bottom: 32px;">
             <div class="row search-bar-row">
                 <div class="col-1 d-none d-sm-none d-md-block align-middle">
