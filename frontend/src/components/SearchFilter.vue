@@ -30,36 +30,9 @@
                 </div>
                 <div class="dropdown-menu p-2 text-muted">
                     <div class="row gx-0">
-                        
-                        <!-- <div class="col">
-                            <div class=" form-check form-check-inline venue-checkbox">
-                                <input class="form-check-input" type="radio" name="venueRadio"  value="topLevel" id="top-level" @change="onVenueCheckboxChange($event)" checked>
-                                <label class="form-check-label" for="top-level">
-                                    Top-Level
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="form-check form-check-inline venue-checkbox">
-                                <input class="form-check-input" type="radio" name="venueRadio"  value="acl" id="acl" @change="onVenueCheckboxChange($event)">
-                                <label class="form-check-label" for="acl">
-                                    ACL
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col">
-                                <div class="form-check form-check-inline venue-checkbox">
-                                    <input class="form-check-input" type="radio" name="venueRadio"  value="all" id="all" @change="onVenueCheckboxChange($event)">
-                                <label class="form-check-label" for="all" >
-                                    All
-                                </label>
-                            </div>
-                        </div> 
-                        <li><hr class="dropdown-divider"></li> -->
-                        <!-- <div><h6>Top-Level</h6></div> -->
                         <div class="form-check form-check-inline venue-checkbox">
-                            <input class="form-check-input" type="checkbox" name="group-topLevel"  value="group-topLevel" id="group-topLevel" @change="onVenueCheckboxChange($event)">
-                            <label class="form-check-label" for="group-topLevel" >
+                            <input class="form-check-input" type="checkbox" name="group-topLevel"  value="group-topLevel" id="group-topLevel" v-model="topLevelCheckboxes" @change="onVenueCheckboxChange($event)">
+                            <label class="form-check-label" for="group-topLevel">
                                 <h6>Top-Level</h6>
                             </label>
                         </div>
@@ -71,7 +44,7 @@
                         </div>
                         <li><hr class="dropdown-divider"></li>
                         <div class="form-check form-check-inline venue-checkbox">
-                            <input class="form-check-input" type="checkbox" name="group-acl"  value="group-acl" id="group-acl" @change="onVenueCheckboxChange($event)">
+                            <input class="form-check-input" type="checkbox" name="group-acl"  value="group-acl" id="group-acl" v-model="topLevelCheckboxes" @change="onVenueCheckboxChange($event)">
                             <label class="form-check-label" for="group-acl" >
                                 <h6>ACL</h6>
                             </label>
@@ -84,7 +57,7 @@
                         </div>
                         <li><hr class="dropdown-divider"></li>
                         <div class="form-check form-check-inline venue-checkbox">
-                            <input class="form-check-input" type="checkbox" name="group-all"  value="group-all" id="group-all" @change="onVenueCheckboxChange($event)">
+                            <input class="form-check-input" type="checkbox" name="group-all"  value="group-all" id="group-all"  v-model="topLevelCheckboxes" @change="onVenueCheckboxChange($event)">
                             <label class="form-check-label" for="group-all" >
                                 <h6>All</h6>
                             </label>
@@ -118,6 +91,7 @@ export default {
             minYear: new Date().getFullYear() - 5,
             maxYear: new Date().getFullYear(),
             selectedVenues: new Set(),
+            topLevelCheckboxes: new Set(["group-topLevel"]),
             topLevelVenues: [],
             aclNotTopLevelVenues: [],
             remainingVenues: [],
@@ -162,29 +136,34 @@ export default {
             this.$refs.slider.noUiSlider.set([this.minYear, this.maxYear]);
         },
         onVenueCheckboxChange(e) {
-            console.log(e.target.value);
+            // console.log(e.target.value);
             if (e.target.value.startsWith("group-")) {
                 if (e.target.value == "group-topLevel") {
                     if (e.target.checked) {
                         this.topLevelVenuesAcronyms.forEach(venue => this.selectedVenues.add(venue));
+                        this.topLevelCheckboxes.add("group-topLevel");
                     } else {
                         this.topLevelVenuesAcronyms.forEach(venue => this.selectedVenues.delete(venue));
+                        this.topLevelCheckboxes.delete("group-topLevel");
                     }
                 } else if (e.target.value == "group-acl") {
                     if (e.target.checked) {
                         this.aclNotTopLevelVenuesAcronyms.forEach(venue => this.selectedVenues.add(venue));
+                        this.topLevelCheckboxes.add("group-acl");
                     } else {
                         this.aclNotTopLevelVenuesAcronyms.forEach(venue => this.selectedVenues.delete(venue));
+                        this.topLevelCheckboxes.delete("group-acl");
                     }
                 } else if (e.target.value == "group-all") {
                     if (e.target.checked) {
                         this.remainingVenuesAcronyms.forEach(venue => this.selectedVenues.add(venue));
+                        this.topLevelCheckboxes.add("group-all");
                     } else {
                         this.remainingVenuesAcronyms.forEach(venue => this.selectedVenues.delete(venue));
+                        this.topLevelCheckboxes.delete("group-all");
                     }
                 } 
             }
-            console.log(this.selectedVenues);
             this.$emit('venuesUpdate', this.selectedVenues);
         }
     },
@@ -203,14 +182,21 @@ export default {
                 this.$emit('yearUpdate', [this.minYear, this.maxYear]);
             }
         },
-        venues() {
-            // this.aclVenues = this.venues.filter(venue => venue.is_acl).map(venue => venue.acronym);
-            this.topLevelVenues = this.venues.filter(venue => venue.is_toplevel);
-            this.aclNotTopLevelVenues = this.venues.filter(venue => !venue.is_toplevel && venue.is_acl);
-            this.remainingVenues = this.venues.filter(venue => !(venue.is_toplevel || venue.is_acl));
-            this.topLevelVenuesAcronyms = this.venues.filter(venue => venue.is_toplevel).map(venue => venue.acronym);
-            this.aclNotTopLevelVenuesAcronyms = this.venues.filter(venue => !venue.is_toplevel && venue.is_acl).map(venue => venue.acronym);
-            this.remainingVenuesAcronyms = this.venues.filter(venue => !(venue.is_toplevel || venue.is_acl)).map(venue => venue.acronym);
+        venues: {
+            immediate: true,
+            handler() {
+                // this.aclVenues = this.venues.filter(venue => venue.is_acl).map(venue => venue.acronym);
+                this.topLevelVenues = this.venues.filter(venue => venue.is_toplevel);
+                this.aclNotTopLevelVenues = this.venues.filter(venue => !venue.is_toplevel && venue.is_acl);
+                this.remainingVenues = this.venues.filter(venue => !(venue.is_toplevel || venue.is_acl));
+                this.topLevelVenuesAcronyms = this.venues.filter(venue => venue.is_toplevel).map(venue => venue.acronym);
+                this.aclNotTopLevelVenuesAcronyms = this.venues.filter(venue => !venue.is_toplevel && venue.is_acl).map(venue => venue.acronym);
+                this.remainingVenuesAcronyms = this.venues.filter(venue => !(venue.is_toplevel || venue.is_acl)).map(venue => venue.acronym);
+                
+                // set default selected venues
+                this.topLevelVenuesAcronyms.forEach(venue => this.selectedVenues.add(venue));
+                this.$emit('venuesUpdate', this.selectedVenues);
+            }
         }
     }
 }
@@ -223,10 +209,6 @@ export default {
 }
 .year-input {
     max-width: 84px;
-}
-.venue-checkbox {
-    margin-right: 0;
-    /* border: 1px solid var(--bs-primary);     */
 }
 #slider {
     height: 10px;
@@ -266,13 +248,14 @@ export default {
     overflow-y: auto;
 }
 .venue-checkbox {
-    overflow:hidden;
-    /* white-space:nowrap; */
+    margin-right: 0;
+    /* overflow:hidden; */
+    white-space:nowrap;
     -ms-text-overflow: ellipsis;
     -o-text-overflow: ellipsis;
-    text-overflow:ellipsis;
+    text-overflow: ellipsis;
     display: inline-block;
-    /* display:block; */
+    display:block;
 }
 
 </style>
