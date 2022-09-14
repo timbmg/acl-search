@@ -249,7 +249,7 @@ export default {
 }
 .venue-checkbox {
     margin-right: 0;
-    /* overflow:hidden; */
+    overflow:hidden;
     white-space:nowrap;
     -ms-text-overflow: ellipsis;
     -o-text-overflow: ellipsis;

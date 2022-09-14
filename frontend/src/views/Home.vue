@@ -112,14 +112,15 @@ export default {
       params.append('year_lte', this.maxYear);
       params.append('from_', this.from);
       params.append('size', this.size);
-      for (let i = 0; i < this.venuesToInclude.length; i++) {
-        params.append('venues', this.venuesToInclude[i]);
+      var venuesArray = Array.from(this.venuesToInclude)
+      for (let i = 0; i < venuesArray.length; i++) {
+        params.append('venues', venuesArray[i]);
       }
-
+      
       var start = new Date().getTime();
       axios.get(
-          // `${process.env.VUE_APP_SEARCH_URL}/api/search/search/publications`,
-          `${process.env.VUE_APP_SEARCH_URL}/api/search/publications`,
+          `${process.env.VUE_APP_SEARCH_URL}/api/search/search/publications`,
+          // `${process.env.VUE_APP_SEARCH_URL}/api/search/publications`,
           {
               params: params
           }
@@ -136,10 +137,16 @@ export default {
     },
     fetchVenues() {
       axios.get(
-          // `${process.env.VUE_APP_SEARCH_URL}/api/search/venues`
-          `${process.env.VUE_APP_SEARCH_URL}/api/venues`
+          `${process.env.VUE_APP_SEARCH_URL}/api/search/venues`
+          // `${process.env.VUE_APP_SEARCH_URL}/api/venues`
       ).then(response => {
           this.venues = response.data;
+          this.venues.sort(function (a, b) {
+              var textA = a.acronym.toUpperCase();
+              var textB = b.acronym.toUpperCase();
+              return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+            }
+          )
           this.selectedVenues = this.venues.filter(venue => venue.is_toplevel).map(venue => venue.acronym)
       })
       .catch(error => {console.log(error)})
