@@ -6,12 +6,14 @@
         <div class="col-9" style="max-width: 360px">
           <h5>&#9749; Sponsor</h5>
           If you find this little website helpful, please consider
-          <a href="https://ko-fi.com/timbmg" target="_blank">supporting </a> 
+          <a href="https://ko-fi.com/timbmg" target="_blank">supporting </a>
           <del>my caffine addiction</del> its further development with a cup of
           coffee (if you can afford). Or leave a star
           <i class="bi bi-star-fill"></i> on
-          <a href="https://github.com/timbmg/acl-search" target="_blank"
-            >github</a
+          <u
+            ><a href="https://github.com/timbmg/acl-search" target="_blank"
+              >github</a
+            ></u
           >.
         </div>
         <div class="col-3" style="max-width: 360px">
@@ -21,12 +23,12 @@
           </div>
           <div>
             <a href="https://twitter.com/timbmg" target="_blank"
-            ><i class="bi bi-twitter"></i> @timbmg</a
+              ><i class="bi bi-twitter"></i> @timbmg</a
             >
           </div>
           <div>
             <a href="https://github.com/timbmg/acl-search" target="_blank"
-            ><i class="bi bi-github"></i> timbmg/acl-search</a
+              ><i class="bi bi-github"></i> timbmg/acl-search</a
             >
           </div>
           <div>
