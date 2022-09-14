@@ -10,7 +10,12 @@
               <a href="/"><img src="/aclsearch.png" alt="ACL Search" width="56"/></a>
             </div>
             <div class="col-11">
-              <h1>There's nothing here, except this cat &#128008;</h1>
+              <h1>Not Found</h1>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col gy-3">
+            <h3>There's nothing here, except this cat &#128008;</h3>
             </div>
           </div>
         </div>
