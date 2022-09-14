@@ -7,8 +7,7 @@
       <div style="margin-bottom: 32px">
         <div class="row search-bar-row">
           <div class="col-1 d-none d-sm-none d-md-block align-middle">
-            <a href="/"><img src="/aclsearch.png" alt="ACL Search" width="56" /></a>
-            
+            <a href="/"><img src="/aclsearch.png" alt="ACL Search" width="56"/></a>
           </div>
           <div class="col-11">
             <h1>Contact</h1>
