@@ -21,5 +21,6 @@ The index service checks for new files in the [ACL Anthology github](https://git
 
 ## Preview
 <div align="center">
-<img src="https://user-images.githubusercontent.com/11020443/186634826-86a125c9-7d90-4c12-ba07-bba3404962ae.gif" width="600"/>
+<img src="https://user-images.githubusercontent.com/11020443/190440903-1edf81a0-b796-4582-8b02-c412f8056f80.gif" width="768"/>
 </div>
+
