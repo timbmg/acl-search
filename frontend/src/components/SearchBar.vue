@@ -41,7 +41,4 @@ export default {
 </script>
 
 <style>
-.search-bar {
-    max-width: 756px;
-}
 </style>

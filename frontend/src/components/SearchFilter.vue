@@ -2,10 +2,8 @@
     <div>
         <div class="row">
             <div class="col-auto dropdown">
-                <!-- <button type="button" class="btn btn-link btn-outline-dark  dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-filter"></i> Year {{minYear}} - {{maxYear}}</button> -->
                 <div class="dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
-                    <!-- <i class="bi bi-filter"></i>  -->
-                    Year: {{minYear}} - {{maxYear}}
+                    <span class="d-none d-md-inline">Year: </span>{{minYear}} - {{maxYear}}
                 </div>
                 <div class="dropdown-menu p-4 text-muted" style="width: 240px; min-height: 150px">
                     <div class="row gy-3">
@@ -25,7 +23,6 @@
             
             <div class="col-auto dropdown">
                 <div class="dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
-                    <!-- <i class="bi bi-filter"></i>  -->
                     Venues
                 </div>
                 <div class="dropdown-menu p-2 text-muted">

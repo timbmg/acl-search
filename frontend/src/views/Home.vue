@@ -6,13 +6,17 @@
                 <div class="col-1 d-none d-sm-none d-md-block align-middle">
                   <a href="/"><img src="/aclsearch.png" alt="ACL Search" width="56"/></a>
                 </div>
-                <div class="col-11">
+                <div class="col-8">
                   <SearchBar @queryUpdate="queryUpdate"/>
                 </div>
             </div>
             <div class="row">
-                <div class="col-11 offset-sm-0 offset-md-1">
+                <div class="col-5 offset-sm-0 offset-md-1">
                   <SearchFilter :venues="venues" @yearUpdate="yearUpdate" @venuesUpdate="venuesUpdate" />
+                </div>
+                <div class="col-3 text-right font-weight-light stats">
+                  <span v-if="hits != null && took != null" class="d-none d-md-block">{{hits}} results in {{took}} ms</span>
+                  <span v-if="hits != null && took != null" class="d-md-none">{{hits}}#/{{took}}ms</span>
                 </div>
             </div>
           </div>
@@ -66,9 +70,9 @@ export default {
       query: '',
       minYear: null, 
       maxYear: null, 
-      took: null,
       publications: null,
-      hits: 0,
+      took: null,
+      hits: null,
       from: 0,
       size: 10,
       venues: [],
@@ -162,5 +166,9 @@ export default {
 .btn-pagination {
   margin-right: 12px;
   width: 120px;
+}
+.stats {
+  color: #6c757d;
+  text-align: right;
 }
 </style>
