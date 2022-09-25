@@ -23,13 +23,13 @@
           <div  v-if="publications">
             <div class="row" v-for="(publication, publicationIndex) in publications.search_results" :key="publicationIndex">
               <div class="col gy-3">
-                <SearchResult :publication="publication.publication" :score="publication.score"/>
+                <SearchResult :publication="publication.publication" :publicationIndex="publicationIndex" :score="publication.score"/>
               </div>
             </div>
             <div class="row">
               <div class="col gy-3 gx-3" >
-                <button v-if="publications.search_results.length < hits" class="btn btn-outline-primary btn-pagination" @click="loadMore">Load More</button>
-                <a v-if="publications.search_results.length > 0" class="btn btn-outline-primary btn-pagination" href="#" role="button">Back To Top</a>
+                <button v-if="publications.search_results.length < hits" class="btn btn-primary btn-pagination" @click="loadMore">Load More</button>
+                <a v-if="publications.search_results.length > 0" class="btn btn-primary btn-pagination" href="#" role="button">Back To Top</a>
               </div>
             </div>
             <div class="row">
