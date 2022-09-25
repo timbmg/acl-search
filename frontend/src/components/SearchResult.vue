@@ -38,7 +38,7 @@ export default {
     score: Number,
   },
   mounted() {
-    if (!this.publication.abstract) {
+    if (this.publication.abstract.length == 0) {
       this.$el.querySelector('.abstract-button').classList.add('disabled')
     }
   },
