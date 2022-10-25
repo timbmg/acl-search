@@ -12,10 +12,10 @@ class ACLClient:
 
         with open(venues_path) as fh:
             self.venues = yaml.load(fh, Loader=SafeLoader)
-        self.conferences = list(self.venues.keys())
-        self.conference_2_acronym = {k: v["acronym"] for k, v in self.venues.items()}
-        self.conference_2_name = {k: v["name"] for k, v in self.venues.items()}
-        self.oldstyle_letter_2_conference = {
+        self.venue_keys = list(self.venues.keys())
+        self.venue_2_acronym = {k: v["acronym"] for k, v in self.venues.items()}
+        self.venue_2_name = {k: v["name"] for k, v in self.venues.items()}
+        self.oldstyle_letter_2_venue = {
             v["oldstyle_letter"]: k
             for k, v in self.venues.items()
             if "oldstyle_letter" in v
@@ -33,24 +33,24 @@ class ACLClient:
             for k, v in self.venues.items()
         ]
 
-    def get_conference_from_filename(self, filename: str) -> str:
+    def get_venue_from_filename(self, filename: str) -> str:
         # remove extension
         *filename_wo_extension, _ = filename.split(".")
         if len(filename_wo_extension) == 1:
             # old filename style, e.g. "E91.xml"
-            conference = self.oldstyle_letter_2_conference[
+            venue = self.oldstyle_letter_2_venue[
                 filename_wo_extension[0][0].upper()
             ]
         elif len(filename_wo_extension) == 2:
             # new filename style, e.g. "2022.acl.xml"
-            conference = filename_wo_extension[1].lower()
+            venue = filename_wo_extension[1].lower()
         else:
             raise ValueError(f"Unknown filename style {filename}.")
 
-        if conference not in self.venues.keys():
-            raise ValueError(f"Unknown conference {conference}.")
+        if venue not in self.venues.keys():
+            raise ValueError(f"Unknown venue {venue}.")
 
-        return conference
+        return venue
 
     def get_xml_from_url(self, url: str) -> str:
         response = requests.get(url)
@@ -66,7 +66,7 @@ class ACLClient:
             result = self.get_text(result)
         return result
 
-    def get_publications_from_xml(self, xml: str, conference: str) -> Dict:
+    def get_publications_from_xml(self, xml: str, venue: str) -> Dict:
 
         tree = ElementTree.fromstring(xml)
         for volume in tree.iter("volume"):
@@ -93,8 +93,8 @@ class ACLClient:
                 url = self.find_and_get_text(paper, "url")
 
                 yield {
-                    "conference_short": self.conference_2_acronym[conference],
-                    "conference_long": self.conference_2_name[conference],
+                    "venue_short": self.venue_2_acronym[venue],
+                    "venue_long": self.venue_2_name[venue],
                     "year": year,
                     "title": title,
                     "abstract": abstract,
