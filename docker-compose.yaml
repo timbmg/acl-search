@@ -100,7 +100,7 @@ services:
     environment:
       ELASTICSEARCH_HOST: elasticsearch
       ELASTICSEARCH_PORT: 9200
-      CORS_ALLOW_ORIGINS: https://aclsear.ch
+      CORS_ALLOW_ORIGINS: ${ACL_SERACH_HOST}
     env_file:
       - .env
     labels:
