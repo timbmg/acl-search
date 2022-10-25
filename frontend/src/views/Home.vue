@@ -12,7 +12,10 @@
             </div>
             <div class="row">
                 <div class="col-5 offset-sm-0 offset-md-1">
-                  <SearchFilter :venues="venues" @yearUpdate="yearUpdate" @venuesUpdate="venuesUpdate" />
+                  <SearchFilter 
+                    :minYear="minYear" :maxYear="maxYear" @yearUpdate="yearUpdate" 
+                    :venues="venues" @venuesUpdate="venuesUpdate" 
+                  />
                 </div>
                 <div class="col-3 text-right font-weight-light stats">
                   <span v-if="hits != null && took != null" class="d-none d-md-block">{{hits}} results in {{took}} ms</span>
@@ -84,8 +87,41 @@ export default {
   },
   methods: {
     queryUpdate(query) {
+      query = this.parseQuery(query);
       this.query = query;
       this.search();
+    },
+    parseQuery(query) {
+      let venueStartIndex = query.search("v:");
+      if (venueStartIndex != -1) {
+        let venueEndIndex = query.indexOf(" ", venueStartIndex)
+        if (venueEndIndex == -1) {
+          venueEndIndex = query.length
+        } 
+        let venueParams = query.substring(venueStartIndex+2, venueEndIndex)
+        this.venuesToInclude = venueParams.split(",").filter(venue => venue.length > 0)
+        query = query.substring(0, venueStartIndex) + query.substring(venueEndIndex, query.length)
+        console.log(query, venueStartIndex, venueEndIndex, this.venuesToInclude)
+      }
+      let yearStartIndex = query.search("y:");
+      if (yearStartIndex != -1) {
+        let yearEndIndex = query.indexOf(" ", yearStartIndex)
+        if (yearEndIndex == -1) {
+          yearEndIndex = query.length
+        } 
+        let yearParams = query.substring(yearStartIndex+2, yearEndIndex)
+        if (yearParams.length == 4) {
+          this.minYear = yearParams
+          this.maxYear = yearParams
+        } else if (yearParams.length == 9) {
+          this.minYear = yearParams.substring(0, 4)
+          this.maxYear = yearParams.substring(5, 9)
+        }
+        query = query.substring(0, yearStartIndex) + query.substring(yearEndIndex, query.length)
+        console.log(query, yearStartIndex, yearEndIndex, this.minYear, this.maxYear)
+      }
+
+      return query
     },
     yearUpdate(values) {
       this.minYear = values[0];
@@ -110,6 +146,7 @@ export default {
       } else {
         this.from = 0;
       }
+
       let params = new URLSearchParams();
       params.append('query', this.query);
       params.append('year_gte', this.minYear);
