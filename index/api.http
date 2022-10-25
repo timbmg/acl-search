@@ -1,0 +1,73 @@
+@hostname = localhost:9200
+
+POST /publications/_update_by_query  HTTP/1.1
+Host: {{hostname}}
+content-type: application/json
+
+{
+  "query": { 
+    "bool": {
+        "must_not": {
+            "exists": {
+                "field": "venue_short"
+            }
+        }
+    }
+  },
+  "script" : {
+    "inline": "ctx._source.venue_short = ctx._source.conference_short; ctx._source.remove(\"conference_short\"); ctx._source.venue_long = ctx._source.conference_long; ctx._source.remove(\"conference_long\");"
+  }
+}
+### 
+
+GET /publications  HTTP/1.1
+Host: {{hostname}}
+content-type: application/json
+
+### 
+GET /_cat/indices  HTTP/1.1
+Host: {{hostname}}
+content-type: application/json
+
+### 
+DELETE /publications-reindex  HTTP/1.1
+Host: {{hostname}}
+content-type: application/json
+
+### 
+POST /_reindex
+Host: {{hostname}}
+content-type: application/json
+
+{
+  "source": {
+    "index": "publications-reindex"
+  },
+  "dest": {
+    "index": "publications"
+  }
+}
+### 
+
+POST /publications/_search  HTTP/1.1
+Host: {{hostname}}
+content-type: application/json
+
+{
+  "query": {
+    "bool": {
+      "must": [
+        { "match_all": {}}
+      ],
+      "filter": [
+        {
+          "terms": {
+            "venue_short": ["earlymt", "tc"]
+          }
+        }
+      ] 
+    }
+  }, 
+  "size": 10, 
+  "from": 0
+}
