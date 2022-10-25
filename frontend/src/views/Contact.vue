@@ -18,7 +18,7 @@
         <div class="col gy-3">
           <h3>Tim Baumgärnter</h3>
           <div>
-            <a href="mailto:baumgaertner.t@gmail.com"
+            <a href="mailto:baumgaertner.t@gmail.com?subject=[ACL Search]: "
               ><i class="bi bi-envelope"></i> baumgaertner.t@gmail.com</a
             >
           </div>
@@ -29,7 +29,7 @@
           </div>
           <div>
             <a href="https://github.com/timbmg/acl-search" target="_blank"
-              ><i class="bi bi-github"></i> @timbmg/acl-search</a
+              ><i class="bi bi-github"></i> timbmg/acl-search</a
             >
           </div>
         </div>
