@@ -55,9 +55,6 @@ services:
     build: 
       context: ./frontend
     restart: *default-restart-policy
-    expose:
-      - 80
-      - 443
     labels:
       - traefik.enable=true
       - traefik.http.routers.frontend.priority=1
@@ -95,8 +92,6 @@ services:
       context: ./search
     command: uvicorn search.main:app --host 0.0.0.0 --port 8000 --log-config logging.conf --no-use-colors
     restart: *default-restart-policy
-    ports:
-      - 8000:8000
     environment:
       ELASTICSEARCH_HOST: elasticsearch
       ELASTICSEARCH_PORT: 9200
@@ -116,8 +111,6 @@ services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.3.3
     restart: *default-restart-policy
-    ports:
-      - 9200:9200
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
@@ -136,8 +129,6 @@ services:
   redis:
     image: redis:7.0.4-alpine
     restart: *default-restart-policy
-    ports:
-      - 6379
     command: redis-server --requirepass ${REDIS_PASSWORD}
     volumes: 
       - redis_data:/data
@@ -150,9 +141,6 @@ services:
   rabbitmq:
     image: rabbitmq:3.10.7
     restart: *default-restart-policy
-    ports:
-      - 5672
-      - 15672
     env_file:
       - ./rabbitmq/.env
     healthcheck:
