@@ -51,7 +51,7 @@ services:
       - certs:/certs
 
   frontend:
-    image: timbmg/acl-search-frontend:latest
+    image: timbmg/acl-search-frontend:${TAG}
     build: 
       context: ./frontend
     restart: *default-restart-policy
@@ -64,7 +64,7 @@ services:
       - traefik.http.routers.frontend.rule=Host(`aclsear.ch`)
   
   index-worker: &index
-    image: timbmg/acl-search-index:latest
+    image: timbmg/acl-search-index:${TAG}
     build: 
       context: ./index
     command: celery -A index.core worker -l DEBUG
@@ -87,7 +87,7 @@ services:
     command: celery -A index.core beat -l DEBUG
 
   search:
-    image: timbmg/acl-search-search:latest
+    image: timbmg/acl-search-search:${TAG}
     build: 
       context: ./search
     command: uvicorn search.main:app --host 0.0.0.0 --port 8000 --log-config logging.conf --no-use-colors
